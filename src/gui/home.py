@@ -36,6 +36,16 @@ class Home(QWidget):
         if self.table.rowCount() == 0:
             layout.addWidget(QLabel("No mappings found yet."))
 
+        self.refreshHome()
+
+        self.watcher = QFileSystemWatcher(["./src/gui/db/config.json"])
+        self.watcher.fileChanged.connect(self.on_config_changed)
+    def refreshHome(self):
+        self.table.blockSignals(True)        # no signals while rebuilding
+        self.table.setRowCount(0)            # ← clear *rows* only
+
+        self._load_mappings()
+
     # UI helpers
     def _add_row(self, shortcut: str, command: str) -> None:
         r = self.table.rowCount()
@@ -75,6 +85,14 @@ class Home(QWidget):
 
     # Remove logic
     @Slot(str)
+    def on_config_changed(self, changed_path):
+        """
+        QFileSystemWatcher stops watching a file if it is *removed* and
+        *recreated* (common when editors do “safe save”).  So we add it back:
+        """
+        if changed_path not in self.watcher.files():
+            self.watcher.addPath(changed_path)
+        self.refreshHome()                     # re-run your logic
     def _remove_mapping(self, shortcut: str) -> None:
         # 1. Ask for confirmation (optional)
         if QMessageBox.question(

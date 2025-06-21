@@ -1,7 +1,12 @@
 {
-  "J": "Say Hi",
-  "O": "Say Hi",
-  "Ctrl+G": "Say Hi",
-  "Ctrl+N": "Say Hi",
-  "H": "help"
+  "H": "help",
+  "Ctrl+C": "left_hand",
+  "B": "test",
+  "B, B, B": "left_hand",
+  "Space": "longest_toe",
+  "J": "left_hand",
+  "T": "longest_toe",
+  "P, O, P": "longest_toe",
+  "K": "femur",
+  "V": "left_hand"
 }
