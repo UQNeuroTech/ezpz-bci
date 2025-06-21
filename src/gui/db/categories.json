@@ -1,11 +1,6 @@
 {
-<<<<<<< HEAD
-    "cycle_count": 20,
-    "cycle_duration": 5,
-=======
     "cycle_count": 1,
     "cycle_duration": 1,
->>>>>>> 14f19a4 (solved issue with not reloading the config maps)
     "categories": [
         "left_hand",
         "right_hand",
@@ -13,15 +8,8 @@
         "finger",
         "back",
         "test",
-<<<<<<< HEAD
-        "femur"
-=======
-        "testing432",
-        "legs",
-        "brain",
-        "bbb",
-        "lrlrl"
->>>>>>> 14f19a4 (solved issue with not reloading the config maps)
+        "femur",
+        "help"
     ],
     "epoch_count": 90,
     "learning_rate": 0.001
