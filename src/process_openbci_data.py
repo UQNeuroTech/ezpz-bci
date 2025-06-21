@@ -12,12 +12,10 @@ from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 import mne
 from mne.channels import read_layout
 
-DATA_DIR = "/home/reuben/Documents/eeg-data/"
-
-def load_openbci_data(jsons_path, prompt_type, verbose=False):
+def load_openbci_data(jsons_path, verbose=False):
     
-    samples_path = jsons_path + "/eeg_samples-" + prompt_type + ".json"
-    markers_path = jsons_path + "/eeg_markers-" + prompt_type + ".json"
+    samples_path = jsons_path + "/eeg_samples.json"
+    markers_path = jsons_path + "/eeg_markers.json"
 
     with open(samples_path, 'r') as json_file1:
         eeg_samples = json.load(json_file1)
@@ -73,8 +71,8 @@ def load_openbci_data(jsons_path, prompt_type, verbose=False):
 def convert_to_mne(name, save_name, save_path, samples, markers, save=True):
     # adapted from: https://brainflow.readthedocs.io/en/stable/notebooks/brainflow_mne.html 
 
-    # board_id = BoardIds.SYNTHETIC_BOARD
-    board_id = BoardIds.CYTON_BOARD
+    board_id = BoardIds.SYNTHETIC_BOARD
+    # board_id = BoardIds.CYTON_BOARD
     
     params = BrainFlowInputParams()
 
@@ -106,7 +104,7 @@ def convert_to_mne(name, save_name, save_path, samples, markers, save=True):
     events = mne.find_events(raw)#, stim_channel="STI 014")
     print(events[:5])  # show the first 5 events
     raw.set_montage("standard_1005")
-    raw = raw.filter(l_freq=0.2, h_freq=40)
+    raw = raw.filter(l_freq=0.2, h_freq=30, method='iir')  # bandpass filter
 
 
     # plot data
@@ -120,7 +118,7 @@ def convert_to_mne(name, save_name, save_path, samples, markers, save=True):
         "Left Fist": 2,
         "Right Fist": 3
     }
-    tmin, tmax = -0.5, 2  # define epochs around events (in s)
+    tmin, tmax = -0.2, 2  # define epochs around events (in s)
     epochs = mne.Epochs(raw, events, event_dict, tmin, tmax, preload=True)
 
     print(epochs)
@@ -156,6 +154,5 @@ if __name__ == "__main__":
 
     prompt_type = 'MM'
     name = "data-reuben-1519-1506-3-classes"
-    jsons_path = DATA_DIR + "/reuben-openbci/" + name
-    samples, markers = load_openbci_data(jsons_path, prompt_type, verbose=True)
-    convert_to_mne(name, name + '-' + prompt_type, jsons_path, samples, markers, save=False)
+    samples, markers = load_openbci_data(".", verbose=True)
+    convert_to_mne(name, name + '-', ".", samples, markers, save=True)

@@ -49,6 +49,22 @@ def add_nothing_prompts(lst):
     return result
 
 
+def initalize_board(board_id, port):
+    """
+    Initialize the OpenBCI board and return the board object.
+    """
+    BoardShim.enable_dev_board_logger()
+
+    params = BrainFlowInputParams()
+    params.serial_port = port
+
+    board = BoardShim(board_id, params)
+    board.prepare_session()
+    board.start_stream()
+
+    return board
+
+
 def main():
     batch_size = 5
 
@@ -57,18 +73,21 @@ def main():
     prompt_order = add_nothing_prompts(prompt_order)
     print(prompt_order)
 
-    board_id = BoardIds.CYTON_BOARD
+    board_id = BoardIds.SYNTHETIC_BOARD
+    # board_id = BoardIds.CYTON_BOARD
     
-    BoardShim.enable_dev_board_logger()
+    # BoardShim.enable_dev_board_logger()
 
-    params = BrainFlowInputParams()
-    params.serial_port = "/dev/ttyUSB0"
+    # params = BrainFlowInputParams()
+    # params.serial_port = "/dev/ttyUSB0"
 
-    pprint(BoardShim.get_board_descr(board_id))
+    # pprint(BoardShim.get_board_descr(board_id))
 
-    board = BoardShim(BoardIds.CYTON_BOARD, params)
-    board.prepare_session()
-    board.start_stream()
+    # board = BoardShim(BoardIds.CYTON_BOARD, params)
+    # board.prepare_session()
+    # board.start_stream()
+
+    board = initalize_board(board_id, "/dev/ttyUSB0")
 
     iter = 0
     prompt_iter = 0
