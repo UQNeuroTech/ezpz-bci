@@ -6,7 +6,7 @@ import os
 import json
 import sys, random
 from pathlib import Path
-from PySide6.QtCore    import Qt, Slot
+from PySide6.QtCore    import Qt, Slot, QFileSystemWatcher
 from PySide6.QtGui     import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QFormLayout,
@@ -53,11 +53,26 @@ class HotKeyMapper(QWidget):
         layout.addLayout(form)
         layout.addWidget(self.table)
 
+        self.refresh()
+
+        self.watcher = QFileSystemWatcher(["./src/gui/db/categories.json"])
+        self.watcher.fileChanged.connect(self.on_file_changed)
+
         # storage for live QShortcuts
         self._shortcuts = {}   # {QKeySequence().toString(): QShortcut}
-
+    def refresh(self):
+        self.command_box.addItems(load_commands(Path("./src/gui/db/categories.json"))) 
     #Add / replace a mapping
     @Slot()
+    def on_file_changed(self, changed_path):
+        """
+        QFileSystemWatcher stops watching a file if it is *removed* and
+        *recreated* (common when editors do “safe save”).  So we add it back:
+        """
+        if changed_path not in self.watcher.files():
+            self.watcher.addPath(changed_path)
+
+        self.refresh()                     # re-run your logic
     def add_mapping(self):
         cmd_name   = self.command_box.currentText()
         key_seq    = self.key_edit.keySequence()

@@ -2,5 +2,11 @@
   "J": "Say Hi",
   "O": "Say Hi",
   "Ctrl+G": "Say Hi",
+<<<<<<< HEAD
   "Ctrl+N": "Say Hi"
+=======
+  "Ctrl+N, Return": "Say Hi",
+  "Ctrl+N": "Say Hi",
+  "K": "left_hand"
+>>>>>>> 14f19a4 (solved issue with not reloading the config maps)
 }
