@@ -4,6 +4,7 @@ from PySide6.QtWidgets import (
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, QKeySequenceEdit,
     QMessageBox, QTabWidget, QLabel
 )
+from training_page import CountdownApp
 from pathlib import Path
 from PySide6.QtGui import QPixmap
 import sys, random
@@ -47,7 +48,7 @@ class MainWindow(QWidget):
         # Add pages
         tabs.addTab(Home(), "Home")
         tabs.addTab(HotKeyMapper(), "Config")
-        tabs.addTab(QLabel("Settings coming soon…"), "Settings")
+        tabs.addTab(CountdownApp(), "Train")
         tabs.addTab(QLabel("About page…"),        "About")
 
         # Drop the tab widget into the root layout
