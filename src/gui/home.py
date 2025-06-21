@@ -4,12 +4,13 @@ from PySide6.QtWidgets import (
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, QKeySequenceEdit,
     QMessageBox, QTabWidget, QLabel, QToolButton
 )
-from training_page import CountdownApp
+from training_page import TrainingPage
 from pathlib import Path
 from PySide6.QtGui import QPixmap
 import sys, random
 import json
 from configForm import HotKeyMapper
+from collection_page import CountdownApp
 
 
 
@@ -110,6 +111,7 @@ class MainWindow(QWidget):
         # Add pages
         tabs.addTab(Home(), "Home")
         tabs.addTab(HotKeyMapper(), "Config")
+        tabs.addTab(TrainingPage(), "Train")
         tabs.addTab(CountdownApp(), "Collect")
         tabs.addTab(QLabel("About page…"),        "About")
 
