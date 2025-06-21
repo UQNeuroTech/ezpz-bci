@@ -8,14 +8,67 @@ from training_page import CountdownApp
 from pathlib import Path
 from PySide6.QtGui import QPixmap
 import sys, random
+import json
 from configForm import HotKeyMapper
 
 
 
 class Home(QWidget):
-    def __init__(self):
+    def __init__(self, cfg_path: Path | str = "./src/gui/db/config.json"):
         super().__init__()
         self.setWindowTitle("Home")
+
+        # --- layout ---------------------------------------------------------
+        layout = QVBoxLayout(self)
+
+        self.table = QTableWidget(0, 2)               # rows will be added
+        self.table.setHorizontalHeaderLabels(["Shortcut", "Command"])
+        self.table.horizontalHeader().setStretchLastSection(True)
+        self.table.setAlternatingRowColors(True)
+        self.table.verticalHeader().setVisible(False)
+
+        layout.addWidget(self.table)
+
+        # --- populate -------------------------------------------------------
+        self._load_mappings(Path(cfg_path))
+
+        # Optional: message if empty
+        if self.table.rowCount() == 0:
+            layout.addWidget(QLabel("No mappings found yet."))
+
+    # -------------------------------------------------------------------- #
+    # helpers                                                              #
+    # -------------------------------------------------------------------- #
+    def _load_mappings(self, path: Path) -> None:
+        """Read JSON and fill the table."""
+        if not path.exists() or path.stat().st_size == 0:
+            return                                              # nothing to load
+
+        try:
+            with path.open("r", encoding="utf-8") as f:
+                data = json.load(f)
+        except json.JSONDecodeError:
+            return                                              # corrupted file
+
+        # Accept either a dict {shortcut: cmd, …} or
+        # a list [{shortcut: cmd}, …] (legacy format)
+        if isinstance(data, list):
+            merged = {}
+            for entry in data:
+                if isinstance(entry, dict):
+                    merged.update(entry)
+            data = merged
+
+        if not isinstance(data, dict):
+            return                                              # unexpected format
+
+        # Fill the table
+        for shortcut, command in data.items():
+            r = self.table.rowCount()
+            self.table.insertRow(r)
+            self.table.setItem(r, 0, QTableWidgetItem(shortcut))
+            self.table.setItem(r, 1, QTableWidgetItem(command))
+
     
 
 class MainWindow(QWidget):
@@ -24,12 +77,13 @@ class MainWindow(QWidget):
         super().__init__()
         self.setWindowTitle("Home")
 
+        #on off button
         self.toggle = QToolButton()
         self.toggle.setCheckable(True)            # makes it act like an on/off switch
         self.toggle.setChecked(False)             # default = OFF
         self.toggle.setText("OFF")                # label so users know the state
 
-        # Colour rules: blue when off, green when on
+        # Colour rules: blue when off, green when on style
         self.toggle.setStyleSheet("""
             QToolButton {
                 background-color: #FF0000;          /* blue */
@@ -46,33 +100,29 @@ class MainWindow(QWidget):
 
         root = QVBoxLayout(self)
 
+        #tab louout
         # Create a QTabWidget (tabs on top by default)
         tabs = QTabWidget()
         tabs.setTabPosition(QTabWidget.North)      # North = horizontal banner
         tabs.setMovable(False)                     # optional
 
-        #add logo
+        #logo
         logo = QLabel()
-
         pix = QPixmap("./src/gui/images/EASY_BCI_logo.png"); 
-
         logo.setPixmap(pix)
-
         logo.setPixmap(pix.scaledToHeight(24, Qt.SmoothTransformation))
-
         if pix.isNull():
             print("Logo failed to load check the path!")
-        
-        tabs.setCornerWidget(logo, Qt.TopLeftCorner)   # or Qt.TopRightCorner
+        tabs.setCornerWidget(logo, Qt.TopLeftCorner) 
 
         # Add pages
         tabs.addTab(Home(), "Home")
         tabs.addTab(HotKeyMapper(), "Config")
-        tabs.addTab(CountdownApp(), "Train")
+        tabs.addTab(CountdownApp(), "Collect")
         tabs.addTab(QLabel("About page…"),        "About")
-        self.toggle.toggled.connect(self.update_label)
 
-        # Stick it in the banner’s right corner
+        # on/off in tab bar
+        self.toggle.toggled.connect(self.update_label)
         tabs.setCornerWidget(self.toggle, Qt.TopRightCorner)
 
         # Drop the tab widget into the root layout

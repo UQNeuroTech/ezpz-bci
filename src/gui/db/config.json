@@ -2,5 +2,10 @@
   "F": "Say Hi",
   "G": "Say Hi",
   "J": "Say Hi",
-  "O": "Say Hi"
+  "O": "Say Hi",
+  "C": "Say Bye",
+  "Ctrl+G": "Say Hi",
+  "Ctrl+N, Return": "Say Hi",
+  "Ctrl+N": "Say Hi",
+  "Ctrl+D": "Say Hi"
 }
