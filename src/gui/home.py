@@ -4,8 +4,12 @@ from PySide6.QtWidgets import (
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, QKeySequenceEdit,
     QMessageBox, QTabWidget, QLabel
 )
+from pathlib import Path
+from PySide6.QtGui import QPixmap
 import sys, random
 from configForm import HotKeyMapper
+
+
 
 class Home(QWidget):
     def __init__(self):
@@ -26,7 +30,21 @@ class MainWindow(QWidget):
         tabs.setTabPosition(QTabWidget.North)      # North = horizontal banner
         tabs.setMovable(False)                     # optional
 
-        # 2Add pages
+        #add logo
+        logo = QLabel()
+
+        pix = QPixmap(":\\src\\gui\\images\\EASY_BCI_logo.png"); 
+
+        logo.setPixmap(pix)
+
+        logo.setPixmap(pix.scaledToHeight(24, Qt.SmoothTransformation))
+
+        if pix.isNull():
+            print("Logo failed to load check the path!")
+        
+        tabs.setCornerWidget(logo, Qt.TopLeftCorner)   # or Qt.TopRightCorner
+
+        # Add pages
         tabs.addTab(Home(), "Home")
         tabs.addTab(HotKeyMapper(), "Config")
         tabs.addTab(QLabel("Settings coming soon…"), "Settings")
