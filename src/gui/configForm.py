@@ -14,24 +14,9 @@ from PySide6.QtWidgets import (
     QMessageBox
 )
 
-# -------------------------------------------------------------------- #
-# 1.  Define the commands your hot-keys will launch                     #
-# -------------------------------------------------------------------- #
+
 path = Path('./src/gui/db/config.json')
-def say_hi():
-    print("hi")
 
-def say_bye():
-    print("bye")
-
-def random_number():
-    print("test")
-
-COMMANDS = {
-    "Say Hi":        say_hi,
-    "Say Bye":       say_bye,
-    "Random number": random_number,
-}
 
 # -------------------------------------------------------------------- #
 # 2.  Main widget                                                      #
@@ -42,8 +27,10 @@ class HotKeyMapper(QWidget):
         self.setWindowTitle("Hot-Key Mapper")
 
         # ----- form: choose command + capture shortcut ----------------
+        self.commands = load_commands(Path("./src/gui/db/categories.json"))
+        print(self.commands)
         self.command_box = QComboBox()
-        self.command_box.addItems(COMMANDS.keys())
+        self.command_box.addItems(self.commands) 
 
         self.key_edit = QKeySequenceEdit()
 
@@ -55,13 +42,13 @@ class HotKeyMapper(QWidget):
         form.addRow("Shortcut:", self.key_edit)
         form.addRow("", self.add_btn)
 
-        # ----- table: show current mappings ---------------------------
+        # table: show current mappings 
         self.table = QTableWidget(0, 2)
         self.table.setHorizontalHeaderLabels(["Command", "Shortcut"])
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.verticalHeader().setVisible(False)
 
-        # ----- overall layout -----------------------------------------
+        #overall layout
         layout = QVBoxLayout(self)
         layout.addLayout(form)
         layout.addWidget(self.table)
@@ -69,9 +56,7 @@ class HotKeyMapper(QWidget):
         # storage for live QShortcuts
         self._shortcuts = {}   # {QKeySequence().toString(): QShortcut}
 
-    # ---------------------------------------------------------------- #
-    # 3.  Add / replace a mapping                                      #
-    # ---------------------------------------------------------------- #
+    #Add / replace a mapping
     @Slot()
     def add_mapping(self):
         cmd_name   = self.command_box.currentText()
@@ -94,7 +79,8 @@ class HotKeyMapper(QWidget):
         add_to_file(key_str, cmd_name, path)
         # Create a live QShortcut bound to this window
         sc = QShortcut(key_seq, self)
-        sc.activated.connect(COMMANDS[cmd_name])
+
+        sc.activated.connect(lambda name=cmd_name: print(f"Triggered: {name}"))
         self._shortcuts[key_str] = sc
 
         # reset editor for the next entry
@@ -118,7 +104,7 @@ def add_to_file(key, cmd, path):
     
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    # ── load existing JSON ────────────────────────────────────────────────
+    #load existing JSON
     if path.exists() and path.stat().st_size:
         try:
             with path.open("r", encoding="utf-8") as f:
@@ -135,13 +121,29 @@ def add_to_file(key, cmd, path):
     else:
         data = {}
 
-    # ── update & save ─────────────────────────────────────────────────────
     data[key] = cmd
-
+    #update and save
     tmp = path.with_suffix(".tmp")
     with tmp.open("w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
     tmp.replace(path)
+
+def load_commands(cfg_path):
+    """Read cfg_path and return a dict {Pretty Name: handler}."""
+    if not cfg_path.exists():
+        print("Config file missing using no commands.")
+        return {}
+
+    with cfg_path.open(encoding="utf-8") as f:
+        data = json.load(f)
+    list_of_commands = []
+
+    
+    for i in data.get("categories", []):
+        list_of_commands.append(i)
+    return list_of_commands
+
+
 
 # -------------------------------------------------------------------- #
 # 4.  Run it                                                           #

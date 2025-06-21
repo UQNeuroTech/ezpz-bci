@@ -18,7 +18,6 @@ class Home(QWidget):
         super().__init__()
         self.setWindowTitle("Home")
 
-        # --- layout ---------------------------------------------------------
         layout = QVBoxLayout(self)
 
         self.table = QTableWidget(0, 2)               # rows will be added
@@ -29,16 +28,11 @@ class Home(QWidget):
 
         layout.addWidget(self.table)
 
-        # --- populate -------------------------------------------------------
         self._load_mappings(Path(cfg_path))
 
-        # Optional: message if empty
         if self.table.rowCount() == 0:
             layout.addWidget(QLabel("No mappings found yet."))
 
-    # -------------------------------------------------------------------- #
-    # helpers                                                              #
-    # -------------------------------------------------------------------- #
     def _load_mappings(self, path: Path) -> None:
         """Read JSON and fill the table."""
         if not path.exists() or path.stat().st_size == 0:
@@ -50,8 +44,6 @@ class Home(QWidget):
         except json.JSONDecodeError:
             return                                              # corrupted file
 
-        # Accept either a dict {shortcut: cmd, …} or
-        # a list [{shortcut: cmd}, …] (legacy format)
         if isinstance(data, list):
             merged = {}
             for entry in data:
