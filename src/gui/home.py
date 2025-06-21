@@ -18,50 +18,100 @@ class Home(QWidget):
     def __init__(self, cfg_path: Path | str = "./src/gui/db/config.json"):
         super().__init__()
         self.setWindowTitle("Home")
+        self.cfg_path = Path(cfg_path)
 
         layout = QVBoxLayout(self)
 
-        self.table = QTableWidget(0, 2)               # rows will be added
-        self.table.setHorizontalHeaderLabels(["Shortcut", "Command"])
-        self.table.horizontalHeader().setStretchLastSection(True)
+        # three columns: Shortcut | Command | (Remove button)
+        self.table = QTableWidget(0, 3)
+        self.table.setHorizontalHeaderLabels(["Shortcut", "Command", ""])
+        self.table.horizontalHeader().setStretchLastSection(False)
         self.table.setAlternatingRowColors(True)
         self.table.verticalHeader().setVisible(False)
 
         layout.addWidget(self.table)
 
-        self._load_mappings(Path(cfg_path))
+        self._load_mappings()
 
         if self.table.rowCount() == 0:
             layout.addWidget(QLabel("No mappings found yet."))
 
-    def _load_mappings(self, path: Path) -> None:
-        """Read JSON and fill the table."""
-        if not path.exists() or path.stat().st_size == 0:
-            return                                              # nothing to load
+    # UI helpers
+    def _add_row(self, shortcut: str, command: str) -> None:
+        r = self.table.rowCount()
+        self.table.insertRow(r)
+
+        self.table.setItem(r, 0, QTableWidgetItem(shortcut))
+        self.table.setItem(r, 1, QTableWidgetItem(command))
+
+        # Remove-row button
+        btn = QPushButton("Remove")
+        btn.clicked.connect(lambda _, sc=shortcut: self._remove_mapping(sc))
+        self.table.setCellWidget(r, 2, btn)
+
+    def _load_mappings(self) -> None:
+        """Load JSON file and populate table."""
+        if not self.cfg_path.exists() or self.cfg_path.stat().st_size == 0:
+            return
 
         try:
-            with path.open("r", encoding="utf-8") as f:
-                data = json.load(f)
+            data = json.loads(self.cfg_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
-            return                                              # corrupted file
+            return
 
+        # Allow either dict or legacy list format
         if isinstance(data, list):
             merged = {}
-            for entry in data:
-                if isinstance(entry, dict):
-                    merged.update(entry)
+            for d in data:
+                if isinstance(d, dict):
+                    merged.update(d)
             data = merged
 
         if not isinstance(data, dict):
-            return                                              # unexpected format
+            return
 
-        # Fill the table
         for shortcut, command in data.items():
-            r = self.table.rowCount()
-            self.table.insertRow(r)
-            self.table.setItem(r, 0, QTableWidgetItem(shortcut))
-            self.table.setItem(r, 1, QTableWidgetItem(command))
+            self._add_row(shortcut, command)
 
+    # Remove logic
+    @Slot(str)
+    def _remove_mapping(self, shortcut: str) -> None:
+        # 1. Ask for confirmation (optional)
+        if QMessageBox.question(
+            self, "Delete mapping",
+            f"Remove shortcut '{shortcut}'?\n(This can’t be undone)",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        ) != QMessageBox.Yes:
+            return
+
+        # 2. Update JSON on disk
+        if self.cfg_path.exists() and self.cfg_path.stat().st_size:
+            try:
+                data = json.loads(self.cfg_path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                data = {}
+        else:
+            data = {}
+
+        # Normalise list→dict if needed
+        if isinstance(data, list):
+            tmp = {}
+            for d in data:
+                if isinstance(d, dict):
+                    tmp.update(d)
+            data = tmp
+
+        if shortcut in data:
+            data.pop(shortcut)
+            tmp_file = self.cfg_path.with_suffix(".tmp")
+            tmp_file.write_text(json.dumps(data, indent=2), encoding="utf-8")
+            tmp_file.replace(self.cfg_path)
+
+        # 3. Remove row from UI
+        for row in range(self.table.rowCount()):
+            if self.table.item(row, 0).text() == shortcut:
+                self.table.removeRow(row)
+                break
     
 
 class MainWindow(QWidget):
@@ -127,7 +177,7 @@ class MainWindow(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
-    window.resize(500, 300)
+    window.resize(700, 500)
     window.show()
     sys.exit(app.exec())
 
