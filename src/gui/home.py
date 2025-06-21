@@ -33,7 +33,7 @@ class MainWindow(QWidget):
         #add logo
         logo = QLabel()
 
-        pix = QPixmap(":\\src\\gui\\images\\EASY_BCI_logo.png"); 
+        pix = QPixmap("./src/gui/images/EASY_BCI_logo.png"); 
 
         logo.setPixmap(pix)
 
