@@ -2,8 +2,9 @@ from PySide6.QtCore    import Qt, Slot
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QFormLayout,
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, QKeySequenceEdit,
-    QMessageBox, QTabWidget, QLabel
+    QMessageBox, QTabWidget, QLabel, QToolButton
 )
+from training_page import CountdownApp
 from pathlib import Path
 from PySide6.QtGui import QPixmap
 import sys, random
@@ -22,6 +23,26 @@ class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Home")
+
+        self.toggle = QToolButton()
+        self.toggle.setCheckable(True)            # makes it act like an on/off switch
+        self.toggle.setChecked(False)             # default = OFF
+        self.toggle.setText("OFF")                # label so users know the state
+
+        # Colour rules: blue when off, green when on
+        self.toggle.setStyleSheet("""
+            QToolButton {
+                background-color: #FF0000;          /* blue */
+                color: white;
+                padding: 4px 10px;
+                border: none;
+                border-radius: 6px;
+                font-weight: bold;
+            }
+            QToolButton:checked {
+                background-color: #4CAF50;          /* green */
+            }
+        """)
 
         root = QVBoxLayout(self)
 
@@ -47,11 +68,17 @@ class MainWindow(QWidget):
         # Add pages
         tabs.addTab(Home(), "Home")
         tabs.addTab(HotKeyMapper(), "Config")
-        tabs.addTab(QLabel("Settings coming soon…"), "Settings")
+        tabs.addTab(CountdownApp(), "Train")
         tabs.addTab(QLabel("About page…"),        "About")
+        self.toggle.toggled.connect(self.update_label)
+
+        # Stick it in the banner’s right corner
+        tabs.setCornerWidget(self.toggle, Qt.TopRightCorner)
 
         # Drop the tab widget into the root layout
         root.addWidget(tabs)
+    def update_label(self, checked: bool) -> None:
+        self.toggle.setText("ON" if checked else "OFF")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

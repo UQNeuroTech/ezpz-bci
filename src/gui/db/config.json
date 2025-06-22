@@ -1,15 +1,6 @@
 {
-    "Ctrl+V": "Say Bye",
-    "Ctrl+B": "Say Hi",
-    "Ctrl+N": "Say Hi",
-    "Ctrl+K": "Random number",
-    "Ctrl+J": "Say Bye",
-    "Ctrl+M, Return": "Say Bye",
-    "categories": [
-        "arm",
-        "leg",
-        "torso"
-    ],
-    "cycle_count": 45,
-    "cycle_duration": 4
+  "F": "Say Hi",
+  "G": "Say Hi",
+  "J": "Say Hi",
+  "O": "Say Hi"
 }

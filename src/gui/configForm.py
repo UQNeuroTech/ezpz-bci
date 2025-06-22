@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
 # -------------------------------------------------------------------- #
 # 1.  Define the commands your hot-keys will launch                     #
 # -------------------------------------------------------------------- #
-path = Path('./db/config.json')
+path = Path('./src/gui/db/config.json')
 def say_hi():
     print("hi")
 
@@ -116,19 +116,28 @@ class HotKeyMapper(QWidget):
     
 def add_to_file(key, cmd, path):
     
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    # ── load existing JSON ────────────────────────────────────────────────
     if path.exists() and path.stat().st_size:
         try:
             with path.open("r", encoding="utf-8") as f:
-                data: dict[str, str] = json.load(f)
+                data = json.load(f)
+            # ⇢ if the file *was* a list, squash it into one dict
+            if isinstance(data, list):
+                merged = {}
+                for entry in data:
+                    if isinstance(entry, dict):
+                        merged.update(entry)
+                data = merged
         except json.JSONDecodeError:
-            data = {}           # corrupted file → reset
+            data = {}
     else:
         data = {}
 
-    # 2. Insert / overwrite
+    # ── update & save ─────────────────────────────────────────────────────
     data[key] = cmd
 
-    # 3. Rewrite atomically
     tmp = path.with_suffix(".tmp")
     with tmp.open("w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
