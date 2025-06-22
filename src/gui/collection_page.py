@@ -1,8 +1,10 @@
 import sys
 import os
 import json
-from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QLineEdit, QLabel
+from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QLineEdit, QLabel, QMessageBox
 from PySide6.QtCore import QTimer, Qt
+
+from src.backend.data_collection_thread import DataCollectionThread
 
 class CountdownApp(QMainWindow):
     def __init__(self):
@@ -61,10 +63,33 @@ class CountdownApp(QMainWindow):
         self.cycle_duration = 2  # Duration of each cycle
 
         # Connect button to action
-        self.run_button.clicked.connect(self.save_to_json_and_start_countdown)
+        self.run_button.clicked.connect(self.toggle_data_collection)
 
-    def save_to_json_and_start_countdown(self):
-        """Save text box contents to JSON and start the countdown."""
+        # Data collection thread
+        self.data_collection_thread = None
+        # Track button state
+        self.is_collecting = False
+
+    def toggle_data_collection(self):
+        """Toggle between starting and stopping data collection."""
+        if not self.is_collecting:
+            # Save settings to JSON and start data collection
+            self.save_to_json()
+            self.start_data_collection()
+            self.run_button.setText("Stop")
+            self.is_collecting = True
+        else:
+            # Stop data collection
+            if self.data_collection_thread and self.data_collection_thread.isRunning():
+                self.data_collection_thread.finished.disconnect(self.on_data_collection_finished)
+                self.data_collection_thread.stop()
+                self.data_collection_thread = None
+            self.run_button.setText("Run")
+            self.is_collecting = False
+            self.heading_label.setText("Collection stopped")
+
+    def save_to_json(self):
+        """Save text box contents to JSON."""
         textbox_contents = self.input_box.text().strip()
         if textbox_contents:
             # Ensure the directory exists
@@ -105,9 +130,6 @@ class CountdownApp(QMainWindow):
                 print(f"Data successfully saved to {json_file_path}: {data}")  # Debugging output
             except Exception as e:
                 print(f"Error saving data to {json_file_path}: {e}")  # Debugging output
-    
-        # Start the countdown
-        self.start_countdown()
 
     def start_countdown(self):
         """Start the countdown."""
@@ -141,6 +163,36 @@ class CountdownApp(QMainWindow):
             # Reset countdown for the next phase
             self.countdown_value = self.cycle_duration
             self.countdown_label.setText(f"{self.countdown_value}")
+
+    def start_data_collection(self):
+        """Start data collection in a separate thread."""
+        if self.data_collection_thread is not None and self.data_collection_thread.isRunning():
+            return  # Already running
+
+        self.data_collection_thread = DataCollectionThread()
+        self.data_collection_thread.set_parent_widget(self)
+        self.data_collection_thread.finished.connect(self.on_data_collection_finished)
+        self.data_collection_thread.error.connect(self.on_data_collection_error)
+        self.data_collection_thread.update_marker.connect(self.update_marker_display)
+        self.data_collection_thread.start()
+
+    def on_data_collection_finished(self):
+        """Handle successful completion of data collection."""
+        print("Data collection completed successfully")
+        # Reset button state
+        self.run_button.setText("Run")
+        self.is_collecting = False
+        self.heading_label.setText("Collection completed")
+        self.data_collection_thread = None
+
+    def on_data_collection_error(self, error_msg):
+        """Handle error in data collection."""
+        QMessageBox.critical(self, "Data Collection Error", f"An error occurred during data collection: {error_msg}")
+
+    def update_marker_display(self, marker_text):
+        """Update the heading label with the current marker text."""
+        self.heading_label.setText(f"Current action: {marker_text}")
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
