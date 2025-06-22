@@ -3,7 +3,7 @@ import os
 import json
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget,
-    QPushButton, QLineEdit, QLabel, QMessageBox
+    QPushButton, QLineEdit, QLabel, QMessageBox, QSpacerItem, QSizePolicy
 )
 from PySide6.QtCore import Qt
 
@@ -11,12 +11,16 @@ class TrainingPage(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Training")
-        self.setGeometry(100, 100, 400, 200)
+        self.setGeometry(100, 100, 400, 300)
 
         # Main widget and layout
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
+
+        # Main layout with margins and spacing
         self.layout = QVBoxLayout()
+        self.layout.setContentsMargins(20, 20, 20, 20)  # Set margins (left, top, right, bottom)
+        self.layout.setSpacing(10)  # Set spacing between widgets
         self.central_widget.setLayout(self.layout)
 
         # Input fields for number of epochs and learning rate
@@ -34,16 +38,17 @@ class TrainingPage(QMainWindow):
         self.train_button.setCheckable(True)  # Make the button toggleable
         self.train_button.clicked.connect(self.toggle_train_button)
 
-        # Layout for input fields
-        input_layout = QVBoxLayout()
-        input_layout.addWidget(self.epochs_label)
-        input_layout.addWidget(self.epochs_input)
-        input_layout.addWidget(self.learning_rate_label)
-        input_layout.addWidget(self.learning_rate_input)
+        # Add widgets to the main layout with alignment to the top
+        self.layout.addWidget(self.epochs_label, alignment=Qt.AlignTop)
+        self.layout.addWidget(self.epochs_input, alignment=Qt.AlignTop)
+        self.layout.addWidget(self.learning_rate_label, alignment=Qt.AlignTop)
+        self.layout.addWidget(self.learning_rate_input, alignment=Qt.AlignTop)
 
-        # Add widgets to the main layout
-        self.layout.addLayout(input_layout)
-        self.layout.addWidget(self.train_button)
+        # Add vertical spacer
+        spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.layout.addItem(spacer)
+
+        self.layout.addWidget(self.train_button, alignment=Qt.AlignTop)
 
     def toggle_train_button(self):
         """Toggle the train button between on (green) and off (red)."""

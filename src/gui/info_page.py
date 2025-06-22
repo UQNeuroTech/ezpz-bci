@@ -21,7 +21,7 @@ class InfoPage(QMainWindow):
         self.title_label.setStyleSheet("font-size: 18px; font-weight: bold;")
         # Image
         self.image_label = QLabel(self)
-        pixmap = QPixmap("images/brainflow.png")  # Path to the image
+        pixmap = QPixmap("src/gui/images/brainflow.png")  # Path to the image
         self.image_label.setPixmap(pixmap)
         self.image_label.setAlignment(Qt.AlignCenter)
         self.image_label.setScaledContents(True)  # Allow scaling to fit the label without distortion
