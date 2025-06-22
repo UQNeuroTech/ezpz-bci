@@ -75,7 +75,7 @@ class TrainingPage(QMainWindow):
 
         # Ensure the directory exists
         os.makedirs("./db", exist_ok=True)
-        json_file_path = "./db/categories.json"
+        json_file_path = "./src/gui/db/categories.json"
 
         # Load existing data if the file exists
         if os.path.exists(json_file_path):
