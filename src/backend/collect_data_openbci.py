@@ -1,5 +1,6 @@
 import argparse
 import time
+import os
 from pprint import pprint
 
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
@@ -65,8 +66,21 @@ def initalize_board(board_id, port):
     return board
 
 
-def main(ui_callback=None, check_running=None):
+def main(ui_callback, is_running):
     batch_size = 5
+
+    # Read cycle_count from categories.json
+    cycle_count = 2
+    try:
+        json_file_path = "./src/gui/db/categories.json"
+        if os.path.exists(json_file_path):
+            with open(json_file_path, "r") as json_file:
+                data = json.load(json_file)
+                cycle_count = data.get("cycle_count", cycle_count)
+    except Exception as e:
+        print(f"Error reading cycle_count from categories.json: {e}")
+
+    print(f"Will run for {cycle_count} cycles")
 
     prompt_order = generate_prompt_order(batch_size)
     print(prompt_order)
@@ -91,6 +105,7 @@ def main(ui_callback=None, check_running=None):
 
     iter = 0
     prompt_iter = 0
+    cycles_completed = 0
 
     done = False
 
@@ -106,7 +121,7 @@ def main(ui_callback=None, check_running=None):
         time.sleep(0.1)
 
         # Check if we should stop the thread
-        if check_running and not check_running():
+        if not is_running():
             print("Data collection stopped by user")
             done = True
             continue
@@ -125,20 +140,25 @@ def main(ui_callback=None, check_running=None):
             prev_time = cur_time
 
             if prompt_iter >= len(prompt_order):
-                user_continue = input("Continue for another batch? (y/n)")
-                if user_continue == 'y':
-                    prompt_order = generate_prompt_order(batch_size)
-                    print(prompt_order)
-                    prompt_order = add_nothing_prompts(prompt_order)
-                    print(prompt_order)
-                    prompt_iter = 0
-                    data_discard = board.get_board_data()
-                    print("Data-discarded:", len(data_discard))
-                    print(marker_dict[prompt_order[prompt_iter]])
-                    continue
-                else:
+                cycles_completed += 1
+                print(f"Completed cycle {cycles_completed} of {cycle_count}")
+
+                # Check if we've reached the target number of cycles
+                if cycles_completed >= cycle_count:
+                    print(f"Reached target of {cycle_count} cycles. Stopping.")
                     done = True
                     continue
+
+                # Generate new prompts for next cycle
+                prompt_order = generate_prompt_order(batch_size)
+                print(prompt_order)
+                prompt_order = add_nothing_prompts(prompt_order)
+                print(prompt_order)
+                prompt_iter = 0
+                data_discard = board.get_board_data()
+                print("Data-discarded:", len(data_discard))
+                print(marker_dict[prompt_order[prompt_iter]])
+                continue
 
         data = board.get_board_data()  # get all data and remove it from internal buffer
 
@@ -163,7 +183,3 @@ def main(ui_callback=None, check_running=None):
 
     with open(markers_path, 'w') as json_file2:
         json.dump(eeg_markers, json_file2)
-
-
-if __name__ == "__main__":
-    main()
