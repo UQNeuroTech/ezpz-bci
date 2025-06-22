@@ -11,7 +11,7 @@ import sys, random
 import json
 from configForm import HotKeyMapper
 from collection_page import CountdownApp
-
+from info_page import InfoPage
 
 
 class Home(QWidget):
@@ -68,7 +68,7 @@ class MainWindow(QWidget):
     """Wrapper window that provides a horizontal tab banner."""
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Home")
+        self.setWindowTitle("EZPZ-BCI")
 
         #on off button
         self.toggle = QToolButton()
@@ -113,7 +113,7 @@ class MainWindow(QWidget):
         tabs.addTab(HotKeyMapper(), "Config")
         tabs.addTab(TrainingPage(), "Train")
         tabs.addTab(CountdownApp(), "Collect")
-        tabs.addTab(QLabel("About page…"),        "About")
+        tabs.addTab(InfoPage(),        "Info")
 
         # on/off in tab bar
         self.toggle.toggled.connect(self.update_label)
