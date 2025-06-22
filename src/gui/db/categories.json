@@ -1,0 +1,10 @@
+{
+    "cycle_count": 35,
+    "cycle_duration": 2,
+    "categories": [
+        "left_hand",
+        "right_hand",
+        "longest_toe",
+        "finger"
+    ]
+}

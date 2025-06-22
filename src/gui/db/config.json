@@ -1,8 +1,6 @@
 {
-  "Ctrl+V": "Say Bye",
-  "Ctrl+B": "Say Hi",
-  "Ctrl+N": "Say Hi",
-  "Ctrl+K": "Random number",
-  "Ctrl+J": "Say Bye",
-  "Ctrl+M, Return": "Say Bye"
+  "F": "Say Hi",
+  "G": "Say Hi",
+  "J": "Say Hi",
+  "O": "Say Hi"
 }
