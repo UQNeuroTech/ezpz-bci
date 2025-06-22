@@ -4,6 +4,8 @@ from pprint import pprint
 
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 
+from connect import initalize_board
+
 import json
 import random
 
@@ -39,7 +41,6 @@ def generate_prompt_order(n_pairs):
 
     return prompt_order
 
-
 def add_nothing_prompts(lst):
     result = []
     for i, val in enumerate(lst):
@@ -47,23 +48,6 @@ def add_nothing_prompts(lst):
         if i != len(lst) - 1:
             result.append(0)
     return result
-
-
-def initalize_board(board_id, port):
-    """
-    Initialize the OpenBCI board and return the board object.
-    """
-    BoardShim.enable_dev_board_logger()
-
-    params = BrainFlowInputParams()
-    params.serial_port = port
-
-    board = BoardShim(board_id, params)
-    board.prepare_session()
-    board.start_stream()
-
-    return board
-
 
 def main():
     batch_size = 5
@@ -74,19 +58,8 @@ def main():
     print(prompt_order)
 
     board_id = BoardIds.SYNTHETIC_BOARD
+    # board_id = BoardIds.CROWN_BOARD
     # board_id = BoardIds.CYTON_BOARD
-    
-    # BoardShim.enable_dev_board_logger()
-
-    # params = BrainFlowInputParams()
-    # params.serial_port = "/dev/ttyUSB0"
-
-    # pprint(BoardShim.get_board_descr(board_id))
-
-    # board = BoardShim(BoardIds.CYTON_BOARD, params)
-    # board.prepare_session()
-    # board.start_stream()
-
     board = initalize_board(board_id, "/dev/ttyUSB0")
 
     iter = 0

@@ -4,47 +4,42 @@ from pprint import pprint
 
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 
+from connect import initalize_board
+
 import json
 import random
 
 import torch
 import numpy as np
-import eegnet  # Make sure eegnet.py is accessible/importable
-MODEL_PATH = "../models/reuben-openbci/data-reuben-2122-2205-3-classes/data-reuben-2122-2205-3-classes-MM.pth"  # e.g. "models/my_model.pth"
-CHANS = 8  # Update as per your setup
-TIME_POINTS = 801  # Update as per your setup
+import eegnet
+
+MODEL_PATH = "./ezpz-model.pth"  # e.g. "models/my_model.pth"
+CHANS = 8
+TIME_POINTS = 801
+
+with open("ezpz-model.json", 'r') as json_file1:
+    train_metas = json.load(json_file1)
 
 # These values should match your training data.
 # Ideally, load from a file. For demo:
-TRAIN_MEAN = -3.913006129388261e-06
-TRAIN_STD = 4.6312790254451314e-05
+TRAIN_MEAN = train_metas["eeg_data_mean"]
+TRAIN_STD = train_metas["eeg_data_std"]
 
 # Load model once and set to eval
-model = eegnet.EEGNetModel(chans=CHANS, time_points=TIME_POINTS)
+model = eegnet.EEGNetModel(chans=train_metas["chans"], time_points=train_metas["time_points"])
 model.load_state_dict(torch.load(MODEL_PATH, map_location='cpu'))
 model.eval()
 
 marker_dict = {
-    0: "Nothing",
-    1: "Rest", 
-    2: "Left Fist", 
-    3: "Right Fist"
+    0: "Rest", 
+    1: "Left Fist", 
+    2: "Right Fist"
 }
 
-
 def main():
-    board_id = BoardIds.CYTON_BOARD
-    
-    BoardShim.enable_dev_board_logger()
-
-    params = BrainFlowInputParams()
-    params.serial_port = "/dev/ttyUSB0"
-
-    pprint(BoardShim.get_board_descr(board_id))
-
-    board = BoardShim(BoardIds.CYTON_BOARD, params)
-    board.prepare_session()
-    board.start_stream()
+    board_id = BoardIds.SYNTHETIC_BOARD
+    # board_id = BoardIds.CYTON_BOARD
+    board = initalize_board(board_id, None)
 
     iter = 0
 
@@ -58,29 +53,30 @@ def main():
     prev_time = time.time()
 
     while not done:
-        iter = iter + 1
         time.sleep(0.1)
 
         cur_time = time.time()
 
-        if cur_time - prev_time > 2: 
+        if cur_time - prev_time > 2.2: 
+            iter = iter + 1
             prev_time = cur_time
 
-        data = board.get_board_data()  # get all data and remove it from internal buffer
+            data = board.get_board_data()  # get all data and remove it from internal buffer
 
-        channels = board.get_eeg_channels(board_id)
+            channels = board.get_eeg_channels(board_id)
+            channels = channels[:8]  # Limit to first 8 channels ---------------------------------------------------- TODO: ADJUST IN FUTURE
 
-        if iter == 1:
-            print("Number of Channels:", len(data))
+            if iter == 1:
+                print("Number of Channels:", len(data))
 
-        eeg_sample = [data[i].tolist() for i in channels]
+            eeg_sample = [data[i].tolist() for i in channels]
 
-        prediction = classify_eeg_sample(eeg_sample)
-        marker = marker_dict[prediction]
-        print(f"Iteration: {iter}, Prediction: {marker} ({prediction})")
+            prediction = classify_eeg_sample(eeg_sample)
+            marker = marker_dict[prediction]
+            print(f"Iteration: {iter}, Prediction: {marker} ({prediction})")
 
-        # eeg_samples.append(eeg_sample)
-        # eeg_markers.append(prompt_order[prompt_iter])
+            # eeg_samples.append(eeg_sample)
+            # eeg_markers.append(prompt_order[prompt_iter])
 
     board.stop_stream()
     board.release_session()
@@ -99,6 +95,9 @@ def classify_eeg_sample(eeg_sample):
     """
     eeg_sample: np.ndarray or list, shape [CHANS, TIME_POINTS]
     """
+
+    print("eeg_sample type/shape:", type(eeg_sample), np.array(eeg_sample).shape)
+
     # Convert to numpy if needed
     eeg_np = np.array(eeg_sample)
 
@@ -107,6 +106,8 @@ def classify_eeg_sample(eeg_sample):
 
     # Reshape to (batch, 1, chans, time_points)
     eeg_tensor = torch.tensor(eeg_np, dtype=torch.float32).unsqueeze(0).unsqueeze(0)  # [1, 1, chans, time_points]
+
+    print("eeg_tensor.shape:", eeg_tensor.shape)
 
     # Model prediction
     with torch.no_grad():

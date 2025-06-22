@@ -92,7 +92,6 @@ def convert_to_mne(name, save_name, save_path, samples, markers, save=True):
     ch_names = BoardShim.get_eeg_names(board_id.value)
     ch_names.append('STI 014')
 
-
     print("ch_types", ch_types)
     print("ch_names", ch_names)
     
@@ -152,7 +151,6 @@ if __name__ == "__main__":
     # samples, markers = load_openbci_data(jsons_path, prompt_type, verbose=True)
     # convert_to_mne(name, name + '-' + prompt_type, jsons_path, samples, markers, save=False)
 
-    prompt_type = 'MM'
-    name = "data-reuben-1519-1506-3-classes"
+    name = "ezpz-epochs"
     samples, markers = load_openbci_data(".", verbose=True)
-    convert_to_mne(name, name + '-', ".", samples, markers, save=True)
+    convert_to_mne(name, name, ".", samples, markers, save=True)
