@@ -12,10 +12,22 @@ from collect_data_openbci import main as collect_data_main
 class DataCollectionThread(QThread):
     finished = Signal()
     error = Signal(str)
+    update_marker = Signal(str)
+
+    def __init__(self):
+        super().__init__()
+        self.parent_widget = None
+
+    def set_parent_widget(self, widget):
+        self.parent_widget = widget
+
+    def update_ui(self, marker_text):
+        # Emit signal to update UI
+        self.update_marker.emit(marker_text)
 
     def run(self):
         try:
-            collect_data_main()
+            collect_data_main(self.update_ui)
             self.finished.emit()
         except Exception as e:
             self.error.emit(str(e))
@@ -171,8 +183,10 @@ class CountdownApp(QMainWindow):
             return  # Already running
 
         self.data_collection_thread = DataCollectionThread()
+        self.data_collection_thread.set_parent_widget(self)
         self.data_collection_thread.finished.connect(self.on_data_collection_finished)
         self.data_collection_thread.error.connect(self.on_data_collection_error)
+        self.data_collection_thread.update_marker.connect(self.update_marker_display)
         self.data_collection_thread.start()
 
     def on_data_collection_finished(self):
@@ -182,6 +196,10 @@ class CountdownApp(QMainWindow):
     def on_data_collection_error(self, error_msg):
         """Handle error in data collection."""
         QMessageBox.critical(self, "Data Collection Error", f"An error occurred during data collection: {error_msg}")
+
+    def update_marker_display(self, marker_text):
+        """Update the heading label with the current marker text."""
+        self.heading_label.setText(f"Current action: {marker_text}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

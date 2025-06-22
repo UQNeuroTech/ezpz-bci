@@ -65,7 +65,7 @@ def initalize_board(board_id, port):
     return board
 
 
-def main():
+def main(ui_callback=None):
     batch_size = 5
 
     prompt_order = generate_prompt_order(batch_size)
@@ -108,7 +108,13 @@ def main():
         cur_time = time.time()
 
         if cur_time - prev_time > 2: 
-            print(prompt_iter, '|', marker_dict[prompt_order[prompt_iter]])
+            current_marker = marker_dict[prompt_order[prompt_iter]]
+            print(prompt_iter, '|', current_marker)
+
+            # Call UI callback if provided
+            if ui_callback is not None:
+                ui_callback(current_marker)
+
             prompt_iter += 1
             prev_time = cur_time
 
