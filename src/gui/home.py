@@ -4,11 +4,11 @@ from PySide6.QtWidgets import (
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, QKeySequenceEdit,
     QMessageBox, QTabWidget, QLabel, QToolButton
 )
-from training_page import CountdownApp
+from src.gui.training_page import CountdownApp
 from pathlib import Path
 from PySide6.QtGui import QPixmap
 import sys, random
-from configForm import HotKeyMapper
+from src.gui.configForm import HotKeyMapper
 
 
 
