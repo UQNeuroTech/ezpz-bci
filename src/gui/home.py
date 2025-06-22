@@ -174,7 +174,7 @@ class MainWindow(QWidget):
     def update_label(self, checked: bool) -> None:
         self.toggle.setText("ON" if checked else "OFF")
 
-if __name__ == "__main__":
+def main():
     app = QApplication(sys.argv)
     window = MainWindow()
     window.resize(700, 500)
