@@ -26,6 +26,9 @@ class DataCollectionThread(QThread):
     def run(self):
         try:
             collect_data_main(self.update_ui, lambda: self.is_running)
-            self.finished.emit()
+            if self.is_running:
+                self.finished.emit()
+            else:
+                print("Thread stopped by user request")
         except Exception as e:
             self.error.emit(str(e))

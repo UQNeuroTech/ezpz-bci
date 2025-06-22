@@ -73,11 +73,12 @@ class TrainingPage(QMainWindow):
         else:
             self.train_button.setStyleSheet("background-color: red; color: white; font-size: 16px;")
             self.train_button.setText("Train")
-            self.heading_label.setText("Stopping data collection...")
+            self.heading_label.setText("Ready")
             # Signal the thread to stop
             if self.data_collection_thread and self.data_collection_thread.isRunning():
+                self.data_collection_thread.finished.disconnect(self.on_data_collection_finished)
                 self.data_collection_thread.stop()
-                self.heading_label.setText("Data collection stopping...")
+                self.data_collection_thread = None
 
     def save_to_json(self):
         """Save textbox values to db/categories.json."""
