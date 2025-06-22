@@ -1,12 +1,7 @@
 {
-  "F": "Say Hi",
-  "G": "longest_toe",
   "J": "Say Hi",
   "O": "Say Hi",
-  "C": "Say Bye",
   "Ctrl+G": "Say Hi",
   "Ctrl+N, Return": "Say Hi",
-  "Ctrl+N": "Say Hi",
-  "Ctrl+D": "Say Hi",
-  "Ctrl+V": "right_hand"
+  "Ctrl+N": "Say Hi"
 }

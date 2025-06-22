@@ -4,5 +4,7 @@
     "categories": [
         "lefttt",
         "test"
-    ]
+    ],
+    "epoch_count": 3,
+    "learning_rate": 3.0
 }
