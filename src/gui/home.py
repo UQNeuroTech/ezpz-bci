@@ -15,7 +15,7 @@ from src.gui.info_page import InfoPage
 
 
 class Home(QWidget):
-    def __init__(self, cfg_path: Path | str = "./src/gui/db/config.json"):
+    def __init__(self, cfg_path: Path | str = "./data/config.json"):
         super().__init__()
         self.setWindowTitle("Home")
         self.cfg_path = Path(cfg_path)

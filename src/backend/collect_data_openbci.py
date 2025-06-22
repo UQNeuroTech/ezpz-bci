@@ -175,8 +175,8 @@ def main(ui_callback, is_running):
     board.stop_stream()
     board.release_session()
 
-    samples_path = "eeg_samples.json"
-    markers_path = "eeg_markers.json"
+    samples_path = "./data/eeg_samples.json"
+    markers_path = "./data/eeg_markers.json"
 
     with open(samples_path, 'w') as json_file1:
         json.dump(eeg_samples, json_file1)

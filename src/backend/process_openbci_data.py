@@ -14,8 +14,21 @@ from mne.channels import read_layout
 
 def load_openbci_data(jsons_path, verbose=False):
     
-    samples_path = jsons_path + "/eeg_samples.json"
-    markers_path = jsons_path + "/eeg_markers.json"
+    # Convert relative paths to absolute for clearer error messages
+    import os
+    abs_jsons_path = os.path.abspath(jsons_path)
+    samples_path = os.path.join(abs_jsons_path, "eeg_samples.json")
+    markers_path = os.path.join(abs_jsons_path, "eeg_markers.json")
+
+    # Check if directory exists
+    if not os.path.isdir(abs_jsons_path):
+        raise FileNotFoundError(f"Data directory not found: {abs_jsons_path}. Please ensure the data directory exists.")
+
+    # Check if files exist before trying to open them
+    if not os.path.exists(samples_path):
+        raise FileNotFoundError(f"EEG samples file not found at: {samples_path}. Make sure data collection has been run.")
+    if not os.path.exists(markers_path):
+        raise FileNotFoundError(f"EEG markers file not found at: {markers_path}. Make sure data collection has been run.")
 
     with open(samples_path, 'r') as json_file1:
         eeg_samples = json.load(json_file1)
@@ -27,7 +40,7 @@ def load_openbci_data(jsons_path, verbose=False):
     channel_number = len(eeg_samples[0])
 
     if verbose:
-        print("OpenBCI Dataset", name, "Loaded")
+        print("OpenBCI Dataset Loaded")
         print("Dataset contains", buffered_sample_number, "buffered samples, and", channel_number, "channels")
         print("----------Printing Size of Each Channel Buffer---------")
         for i in range(buffered_sample_number):
@@ -146,13 +159,18 @@ def convert_to_mne(name, save_name, save_path, samples, markers, save=True):
 
 
 if __name__ == "__main__":
-    # prompt_type = 'MI'
-    # name = "data-reuben-2122-2205-3-classes"
-    # jsons_path = DATA_DIR + "/reuben-openbci/" + name
-    # samples, markers = load_openbci_data(jsons_path, prompt_type, verbose=True)
-    # convert_to_mne(name, name + '-' + prompt_type, jsons_path, samples, markers, save=False)
+    try:
+        # Configuration
+        prompt_type = 'MM'
+        name = "data-reuben-1519-1506-3-classes"
+        data_dir = "."
 
-    prompt_type = 'MM'
-    name = "data-reuben-1519-1506-3-classes"
-    samples, markers = load_openbci_data(".", verbose=True)
-    convert_to_mne(name, name + '-', ".", samples, markers, save=True)
+        print(f"Attempting to load OpenBCI data from {data_dir}...")
+        samples, markers = load_openbci_data(data_dir, verbose=True)
+        print(f"Data loaded successfully. Processing with MNE...")
+        convert_to_mne(name, name + '-', data_dir, samples, markers, save=True)
+    except FileNotFoundError as e:
+        print(f"Error: {e}")
+        print("Please make sure you have collected data first using the Collection page.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")

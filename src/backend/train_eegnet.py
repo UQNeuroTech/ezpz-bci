@@ -319,7 +319,7 @@ if __name__ == "__main__":
 
     name = "sythetic-test"
     load_path = "./synthetic-test.fif"
-    save_path_folder = "./"
+    save_path_folder = "../"
 
     # train(name, load_path, save_path_folder, hyperparameters, save=True)
     evaluate(name, save_path_folder, pltshow=True, save=False, verbose=True)
