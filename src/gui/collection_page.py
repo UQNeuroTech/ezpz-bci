@@ -7,7 +7,7 @@ from PySide6.QtCore import QTimer, Qt
 class CountdownApp(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Training")
+        self.setWindowTitle("Collection")
         self.setGeometry(100, 100, 1000, 300)
 
         # Main widget and layout

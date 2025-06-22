@@ -10,7 +10,7 @@ from PySide6.QtCore import Qt
 class TrainingPage(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Training Page")
+        self.setWindowTitle("Training")
         self.setGeometry(100, 100, 400, 200)
 
         # Main widget and layout
