@@ -1,12 +1,14 @@
 {
-    "cycle_count": 35,
+    "cycle_count": 30,
     "cycle_duration": 2,
     "categories": [
         "left_hand",
         "right_hand",
         "longest_toe",
-        "finger"
+        "finger",
+        "back",
+        "test"
     ],
-    "epoch_count": 65,
-    "learning_rate": 0.0001
+    "epoch_count": 20,
+    "learning_rate": 0.1
 }
