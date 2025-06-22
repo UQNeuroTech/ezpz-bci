@@ -65,7 +65,7 @@ def initalize_board(board_id, port):
     return board
 
 
-def main(ui_callback=None):
+def main(ui_callback=None, check_running=None):
     batch_size = 5
 
     prompt_order = generate_prompt_order(batch_size)
@@ -104,6 +104,12 @@ def main(ui_callback=None):
     while not done:
         iter = iter + 1
         time.sleep(0.1)
+
+        # Check if we should stop the thread
+        if check_running and not check_running():
+            print("Data collection stopped by user")
+            done = True
+            continue
 
         cur_time = time.time()
 

@@ -10,6 +10,7 @@ class DataCollectionThread(QThread):
     def __init__(self):
         super().__init__()
         self.parent_widget = None
+        self.is_running = True
 
     def set_parent_widget(self, widget):
         self.parent_widget = widget
@@ -18,9 +19,13 @@ class DataCollectionThread(QThread):
         # Emit signal to update UI
         self.update_marker.emit(marker_text)
 
+    def stop(self):
+        """Signal the thread to stop"""
+        self.is_running = False
+
     def run(self):
         try:
-            collect_data_main(self.update_ui)
+            collect_data_main(self.update_ui, lambda: self.is_running)
             self.finished.emit()
         except Exception as e:
             self.error.emit(str(e))

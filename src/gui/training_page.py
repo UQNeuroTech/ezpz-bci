@@ -73,7 +73,11 @@ class TrainingPage(QMainWindow):
         else:
             self.train_button.setStyleSheet("background-color: red; color: white; font-size: 16px;")
             self.train_button.setText("Train")
-            self.heading_label.setText("Ready")
+            self.heading_label.setText("Stopping data collection...")
+            # Signal the thread to stop
+            if self.data_collection_thread and self.data_collection_thread.isRunning():
+                self.data_collection_thread.stop()
+                self.heading_label.setText("Data collection stopping...")
 
     def save_to_json(self):
         """Save textbox values to db/categories.json."""
@@ -128,6 +132,13 @@ class TrainingPage(QMainWindow):
     def on_data_collection_finished(self):
         """Handle successful completion of data collection."""
         print("Data collection completed successfully")
+        # Reset button state if it's still in checked state
+        if self.train_button.isChecked():
+            self.train_button.setChecked(False)
+            self.train_button.setStyleSheet("background-color: red; color: white; font-size: 16px;")
+            self.train_button.setText("Train")
+        self.heading_label.setText("Ready")
+        self.data_collection_thread = None
 
     def on_data_collection_error(self, error_msg):
         """Handle error in data collection."""
