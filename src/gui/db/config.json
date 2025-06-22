@@ -1,6 +1,7 @@
 {
-  "F": "Say Hi",
-  "G": "Say Hi",
   "J": "Say Hi",
-  "O": "Say Hi"
+  "O": "Say Hi",
+  "Ctrl+G": "Say Hi",
+  "Ctrl+N": "Say Hi",
+  "H": "help"
 }
