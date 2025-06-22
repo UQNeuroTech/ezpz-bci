@@ -1,16 +1,11 @@
-import mne
 import json
-
-import time
 import numpy as np
-import pandas as pd
+import mne
+from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 import matplotlib.pyplot as plt
 
-import brainflow
-from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
-
-import mne
-from mne.channels import read_layout
+# todo: show ui in another window, cannot be shown in background thread
+show_ui = False
 
 def load_openbci_data(jsons_path, verbose=False):
     
@@ -121,9 +116,10 @@ def convert_to_mne(name, save_name, save_path, samples, markers, save=True):
 
 
     # plot data
-    raw.plot()
-    raw.plot_psd(average=False)
-    plt.show()
+    if show_ui:
+        raw.plot()
+        raw.plot_psd(average=False)
+        plt.show()
 
     # Create EPOCHS
     event_dict = {
@@ -149,28 +145,11 @@ def convert_to_mne(name, save_name, save_path, samples, markers, save=True):
     # epochs["Rest"].average().plot_topomap(times, ch_type='eeg')
 
     # Plot epochs
-    epochs.plot(scalings='auto', events=True)
+    if show_ui:
+        epochs.plot(scalings='auto', events=True)
 
-    plt.show()
+        plt.show()
 
     if save:
         # Save Epochs
         epochs.save(save_path + "/" + save_name + '-epo.fif', overwrite=True)
-
-
-if __name__ == "__main__":
-    try:
-        # Configuration
-        prompt_type = 'MM'
-        name = "data-reuben-1519-1506-3-classes"
-        data_dir = "."
-
-        print(f"Attempting to load OpenBCI data from {data_dir}...")
-        samples, markers = load_openbci_data(data_dir, verbose=True)
-        print(f"Data loaded successfully. Processing with MNE...")
-        convert_to_mne(name, name + '-', data_dir, samples, markers, save=True)
-    except FileNotFoundError as e:
-        print(f"Error: {e}")
-        print("Please make sure you have collected data first using the Collection page.")
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
