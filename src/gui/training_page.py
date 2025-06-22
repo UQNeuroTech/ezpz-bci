@@ -1,8 +1,24 @@
 import sys
 import os
 import json
-from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QLineEdit, QLabel
-from PySide6.QtCore import QTimer, Qt
+from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QLineEdit, QLabel, QMessageBox
+from PySide6.QtCore import QTimer, Qt, QThread, Signal
+
+# Add path to find collect_data_openbci module
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from collect_data_openbci import main as collect_data_main
+
+# Thread class to run data collection in background
+class DataCollectionThread(QThread):
+    finished = Signal()
+    error = Signal(str)
+
+    def run(self):
+        try:
+            collect_data_main()
+            self.finished.emit()
+        except Exception as e:
+            self.error.emit(str(e))
 
 class CountdownApp(QMainWindow):
     def __init__(self):
@@ -63,8 +79,11 @@ class CountdownApp(QMainWindow):
         # Connect button to action
         self.run_button.clicked.connect(self.save_to_json_and_start_countdown)
 
+        # Data collection thread
+        self.data_collection_thread = None
+
     def save_to_json_and_start_countdown(self):
-        """Save text box contents to JSON and start the countdown."""
+        """Save text box contents to JSON, start the countdown, and begin data collection."""
         textbox_contents = self.input_box.text().strip()
         if textbox_contents:
             # Ensure the directory exists
@@ -106,6 +125,9 @@ class CountdownApp(QMainWindow):
                 print(f"Data successfully saved to {json_file_path}: {data}")  # Debugging output
             except Exception as e:
                 print(f"Error saving data to {json_file_path}: {e}")  # Debugging output
+
+        # Start data collection in a separate thread
+        self.start_data_collection()
     
         # Start the countdown
         self.start_countdown()
@@ -142,6 +164,24 @@ class CountdownApp(QMainWindow):
             # Reset countdown for the next phase
             self.countdown_value = self.cycle_duration
             self.countdown_label.setText(f"{self.countdown_value}")
+
+    def start_data_collection(self):
+        """Start data collection in a separate thread."""
+        if self.data_collection_thread is not None and self.data_collection_thread.isRunning():
+            return  # Already running
+
+        self.data_collection_thread = DataCollectionThread()
+        self.data_collection_thread.finished.connect(self.on_data_collection_finished)
+        self.data_collection_thread.error.connect(self.on_data_collection_error)
+        self.data_collection_thread.start()
+
+    def on_data_collection_finished(self):
+        """Handle successful completion of data collection."""
+        print("Data collection completed successfully")
+
+    def on_data_collection_error(self, error_msg):
+        """Handle error in data collection."""
+        QMessageBox.critical(self, "Data Collection Error", f"An error occurred during data collection: {error_msg}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
