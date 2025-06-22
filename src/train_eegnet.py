@@ -130,7 +130,7 @@ def evaluate(name, saved_path_folder, pltshow=False, save=True, verbose=False):
     with open(saved_path_folder + name + ".json", 'r') as json_file1:
         train_metas_loaded = json.load(json_file1)
 
-    train_info, X_test_, y_test_, y_train_, chans, time_points, class_counts = train_metas_loaded
+    train_info, X_test_, y_test_, y_train_, chans, time_points, class_counts, eeg_data_mean, eeg_data_std = train_metas_loaded
     print("class_counts:", class_counts)
     # print(train_metas_loaded)
     # train_info, X_test_, y_test_, y_train_, chans, time_points = train_metas_loaded
@@ -158,7 +158,7 @@ def evaluate(name, saved_path_folder, pltshow=False, save=True, verbose=False):
     plt.title("Loss Curve")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
-    if save: plt.savefig(save_path_folder + name + '_loss_curve.png')
+    if save: plt.savefig(saved_path_folder + name + '_loss_curve.png')
     if pltshow: plt.show() 
     else: plt.close(fig)
 
@@ -167,7 +167,7 @@ def evaluate(name, saved_path_folder, pltshow=False, save=True, verbose=False):
     plt.title("Accuracy Curve")
     plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
-    if save: plt.savefig(save_path_folder + name + '_accuracy_curve.png')
+    if save: plt.savefig(saved_path_folder + name + '_accuracy_curve.png')
     if pltshow: plt.show()
     else: plt.close(fig)
 
@@ -179,7 +179,7 @@ def evaluate_MM_on_MI(name, saved_path_folder, load_test_path, pltshow=False, sa
     with open(saved_path_folder + name + ".json", 'r') as json_file1:
         train_metas_loaded = json.load(json_file1)
 
-    train_info, X_test_, y_test_, y_train_, chans, time_points, class_counts = train_metas_loaded
+    train_info, X_test_, y_test_, y_train_, chans, time_points, class_counts, eeg_data_mean, eeg_data_std = train_metas_loaded
     print("class_counts:", class_counts)
     # print(train_metas_loaded)
     # train_info, X_test_, y_test_, y_train_, chans, time_points = train_metas_loaded
@@ -227,7 +227,7 @@ def evaluate_MM_on_MI(name, saved_path_folder, load_test_path, pltshow=False, sa
     plt.title("Loss Curve")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
-    if save: plt.savefig(save_path_folder + name + '_loss_curve.png')
+    if save: plt.savefig(saved_path_folder + name + '_loss_curve.png')
     if pltshow: plt.show() 
     else: plt.close(fig)
 
@@ -236,7 +236,7 @@ def evaluate_MM_on_MI(name, saved_path_folder, load_test_path, pltshow=False, sa
     plt.title("Accuracy Curve")
     plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
-    if save: plt.savefig(save_path_folder + name + '_accuracy_curve.png')
+    if save: plt.savefig(saved_path_folder + name + '_accuracy_curve.png')
     if pltshow: plt.show()
     else: plt.close(fig)
 

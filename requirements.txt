@@ -1,0 +1,13 @@
+torch>=1.12.0
+torchvision
+torchsummary
+mne>=1.0.0
+pandas
+matplotlib
+numpy
+scipy
+scikit-learn
+seaborn
+psutil
+brainflow
+PySide6 

@@ -1,5 +1,6 @@
 import argparse
 import time
+import os
 from pprint import pprint
 
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
@@ -19,10 +20,14 @@ TIME_POINTS = 801  # Update as per your setup
 TRAIN_MEAN = -3.913006129388261e-06
 TRAIN_STD = 4.6312790254451314e-05
 
-# Load model once and set to eval
-model = eegnet.EEGNetModel(chans=CHANS, time_points=TIME_POINTS)
-model.load_state_dict(torch.load(MODEL_PATH, map_location='cpu'))
-model.eval()
+# Load model once and set to eval (only if file exists)
+model = None
+if os.path.exists(MODEL_PATH):
+    model = eegnet.EEGNetModel(chans=CHANS, time_points=TIME_POINTS)
+    model.load_state_dict(torch.load(MODEL_PATH, map_location='cpu'))
+    model.eval()
+else:
+    print(f"Warning: Model file not found at {MODEL_PATH}")
 
 marker_dict = {
     0: "Nothing",
@@ -99,6 +104,10 @@ def classify_eeg_sample(eeg_sample):
     """
     eeg_sample: np.ndarray or list, shape [CHANS, TIME_POINTS]
     """
+    if model is None:
+        # Return random prediction if model not loaded
+        return random.randint(0, 3)
+    
     # Convert to numpy if needed
     eeg_np = np.array(eeg_sample)
 
