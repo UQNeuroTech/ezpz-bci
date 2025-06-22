@@ -68,8 +68,17 @@ class TrainingPage(QMainWindow):
             self.train_button.setStyleSheet("background-color: green; color: white; font-size: 16px;")
             self.train_button.setText("Training...")
             self.heading_label.setText("Ready to collect data...")
-            self.save_to_json()  # Save values to JSON when training starts
-            self.start_data_collection() # Start data collection in a separate thread
+            try:
+                self.save_to_json()  # Save values to JSON when training starts
+                self.start_data_collection() # Start data collection in a separate thread
+            except Exception as e:
+                # Reset button state if there's an error
+                self.train_button.setChecked(False)
+                self.train_button.setStyleSheet("background-color: red; color: white; font-size: 16px;")
+                self.train_button.setText("Train")
+                self.heading_label.setText("Ready")
+                QMessageBox.critical(self, "Error", f"Could not start training: {str(e)}")
+                return
         else:
             self.train_button.setStyleSheet("background-color: red; color: white; font-size: 16px;")
             self.train_button.setText("Train")
@@ -94,8 +103,8 @@ class TrainingPage(QMainWindow):
             return
 
         # Ensure the directory exists
-        os.makedirs("./db", exist_ok=True)
         json_file_path = "./src/gui/db/categories.json"
+        os.makedirs(os.path.dirname(json_file_path), exist_ok=True)
 
         # Load existing data if the file exists
         if os.path.exists(json_file_path):
