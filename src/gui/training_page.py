@@ -6,6 +6,8 @@ from PySide6.QtWidgets import (
     QPushButton, QLineEdit, QLabel, QMessageBox, QSpacerItem, QSizePolicy
 )
 from PySide6.QtCore import Qt
+from src.backend.training_data_processing_thread import TrainingThread
+
 
 class TrainingPage(QMainWindow):
     def __init__(self):
@@ -50,15 +52,44 @@ class TrainingPage(QMainWindow):
 
         self.layout.addWidget(self.train_button, alignment=Qt.AlignTop)
 
+        self.training_thread = None
+
     def toggle_train_button(self):
         """Toggle the train button between on (green) and off (red)."""
         if self.train_button.isChecked():
             self.train_button.setStyleSheet("background-color: green; color: white; font-size: 16px;")
             self.train_button.setText("Training...")
             self.save_to_json()  # Save values to JSON when training starts
+            self.start_training()
         else:
             self.train_button.setStyleSheet("background-color: red; color: white; font-size: 16px;")
             self.train_button.setText("Train")
+            self.stop_training()
+
+    def start_training(self):
+        if self.training_thread and self.training_thread.isRunning():
+            return
+
+        self.training_thread = TrainingThread()
+        self.training_thread.finished.connect(self.on_training_finished)
+        self.training_thread.error.connect(self.on_training_error)
+        self.training_thread.start()
+
+    def stop_training(self):
+        if self.training_thread and self.training_thread.isRunning():
+            self.training_thread.quit()
+            self.training_thread.wait()
+        self.train_button.setChecked(False)
+        self.train_button.setStyleSheet("background-color: red; color: white; font-size: 16px;")
+        self.train_button.setText("Train")
+
+    def on_training_finished(self):
+        self.stop_training()
+        QMessageBox.information(self, "Success", "Training completed successfully.")
+
+    def on_training_error(self, message):
+        self.stop_training()
+        QMessageBox.critical(self, "Error", f"An error occurred during training: {message}")
 
     def save_to_json(self):
         """Save textbox values to db/categories.json."""
@@ -74,8 +105,8 @@ class TrainingPage(QMainWindow):
             return
 
         # Ensure the directory exists
-        os.makedirs("./db", exist_ok=True)
-        json_file_path = "./src/gui/db/categories.json"
+        os.makedirs("./data", exist_ok=True)
+        json_file_path = "./data/categories.json"
 
         # Load existing data if the file exists
         if os.path.exists(json_file_path):

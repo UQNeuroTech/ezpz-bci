@@ -1,23 +1,29 @@
-import mne
 import json
-
-import time
 import numpy as np
-import pandas as pd
+import mne
+from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 import matplotlib.pyplot as plt
 
-import brainflow
-from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
+# todo: show ui in another window, cannot be shown in background thread
+show_ui = False
 
-import mne
-from mne.channels import read_layout
-
-DATA_DIR = "/home/reuben/Documents/eeg-data/"
-
-def load_openbci_data(jsons_path, prompt_type, verbose=False):
+def load_openbci_data(jsons_path, verbose=False):
     
-    samples_path = jsons_path + "/eeg_samples-" + prompt_type + ".json"
-    markers_path = jsons_path + "/eeg_markers-" + prompt_type + ".json"
+    # Convert relative paths to absolute for clearer error messages
+    import os
+    abs_jsons_path = os.path.abspath(jsons_path)
+    samples_path = os.path.join(abs_jsons_path, "eeg_samples.json")
+    markers_path = os.path.join(abs_jsons_path, "eeg_markers.json")
+
+    # Check if directory exists
+    if not os.path.isdir(abs_jsons_path):
+        raise FileNotFoundError(f"Data directory not found: {abs_jsons_path}. Please ensure the data directory exists.")
+
+    # Check if files exist before trying to open them
+    if not os.path.exists(samples_path):
+        raise FileNotFoundError(f"EEG samples file not found at: {samples_path}. Make sure data collection has been run.")
+    if not os.path.exists(markers_path):
+        raise FileNotFoundError(f"EEG markers file not found at: {markers_path}. Make sure data collection has been run.")
 
     with open(samples_path, 'r') as json_file1:
         eeg_samples = json.load(json_file1)
@@ -29,7 +35,7 @@ def load_openbci_data(jsons_path, prompt_type, verbose=False):
     channel_number = len(eeg_samples[0])
 
     if verbose:
-        print("OpenBCI Dataset", name, "Loaded")
+        print("OpenBCI Dataset Loaded")
         print("Dataset contains", buffered_sample_number, "buffered samples, and", channel_number, "channels")
         print("----------Printing Size of Each Channel Buffer---------")
         for i in range(buffered_sample_number):
@@ -73,8 +79,8 @@ def load_openbci_data(jsons_path, prompt_type, verbose=False):
 def convert_to_mne(name, save_name, save_path, samples, markers, save=True):
     # adapted from: https://brainflow.readthedocs.io/en/stable/notebooks/brainflow_mne.html 
 
-    # board_id = BoardIds.SYNTHETIC_BOARD
-    board_id = BoardIds.CYTON_BOARD
+    board_id = BoardIds.SYNTHETIC_BOARD
+    # board_id = BoardIds.CYTON_BOARD
     
     params = BrainFlowInputParams()
 
@@ -106,13 +112,14 @@ def convert_to_mne(name, save_name, save_path, samples, markers, save=True):
     events = mne.find_events(raw)#, stim_channel="STI 014")
     print(events[:5])  # show the first 5 events
     raw.set_montage("standard_1005")
-    raw = raw.filter(l_freq=0.2, h_freq=40)
+    raw = raw.filter(l_freq=0.2, h_freq=30, method='iir')  # bandpass filter
 
 
     # plot data
-    raw.plot()
-    raw.plot_psd(average=False)
-    plt.show()
+    if show_ui:
+        raw.plot()
+        raw.plot_psd(average=False)
+        plt.show()
 
     # Create EPOCHS
     event_dict = {
@@ -120,7 +127,7 @@ def convert_to_mne(name, save_name, save_path, samples, markers, save=True):
         "Left Fist": 2,
         "Right Fist": 3
     }
-    tmin, tmax = -0.5, 2  # define epochs around events (in s)
+    tmin, tmax = -0.2, 2  # define epochs around events (in s)
     epochs = mne.Epochs(raw, events, event_dict, tmin, tmax, preload=True)
 
     print(epochs)
@@ -138,24 +145,11 @@ def convert_to_mne(name, save_name, save_path, samples, markers, save=True):
     # epochs["Rest"].average().plot_topomap(times, ch_type='eeg')
 
     # Plot epochs
-    epochs.plot(scalings='auto', events=True)
+    if show_ui:
+        epochs.plot(scalings='auto', events=True)
 
-    plt.show()
+        plt.show()
 
     if save:
         # Save Epochs
         epochs.save(save_path + "/" + save_name + '-epo.fif', overwrite=True)
-
-
-if __name__ == "__main__":
-    # prompt_type = 'MI'
-    # name = "data-reuben-2122-2205-3-classes"
-    # jsons_path = DATA_DIR + "/reuben-openbci/" + name
-    # samples, markers = load_openbci_data(jsons_path, prompt_type, verbose=True)
-    # convert_to_mne(name, name + '-' + prompt_type, jsons_path, samples, markers, save=False)
-
-    prompt_type = 'MM'
-    name = "data-reuben-1519-1506-3-classes"
-    jsons_path = DATA_DIR + "/reuben-openbci/" + name
-    samples, markers = load_openbci_data(jsons_path, prompt_type, verbose=True)
-    convert_to_mne(name, name + '-' + prompt_type, jsons_path, samples, markers, save=False)

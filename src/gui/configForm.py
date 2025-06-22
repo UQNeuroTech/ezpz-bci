@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
 )
 
 
-path = Path('./src/gui/db/config.json')
+path = Path('./data/config.json')
 
 
 # -------------------------------------------------------------------- #
@@ -27,7 +27,7 @@ class HotKeyMapper(QWidget):
         self.setWindowTitle("Hot-Key Mapper")
 
         # ----- form: choose command + capture shortcut ----------------
-        self.commands = load_commands(Path("./src/gui/db/categories.json"))
+        self.commands = load_commands(Path("./data/categories.json"))
         print(self.commands)
         self.command_box = QComboBox()
         self.command_box.addItems(self.commands) 
@@ -55,13 +55,13 @@ class HotKeyMapper(QWidget):
 
         self.refresh()
 
-        self.watcher = QFileSystemWatcher(["./src/gui/db/categories.json"])
+        self.watcher = QFileSystemWatcher(["./data/categories.json"])
         self.watcher.fileChanged.connect(self.on_file_changed)
 
         # storage for live QShortcuts
         self._shortcuts = {}   # {QKeySequence().toString(): QShortcut}
     def refresh(self):
-        self.command_box.addItems(load_commands(Path("./src/gui/db/categories.json"))) 
+        self.command_box.addItems(load_commands(Path("./data/categories.json")))
     #Add / replace a mapping
     @Slot()
     def on_file_changed(self, changed_path):

@@ -130,7 +130,7 @@ def evaluate(name, saved_path_folder, pltshow=False, save=True, verbose=False):
     with open(saved_path_folder + name + ".json", 'r') as json_file1:
         train_metas_loaded = json.load(json_file1)
 
-    train_info, X_test_, y_test_, y_train_, chans, time_points, class_counts = train_metas_loaded
+    train_info, X_test_, y_test_, y_train_, chans, time_points, class_counts, _, _ = train_metas_loaded
     print("class_counts:", class_counts)
     # print(train_metas_loaded)
     # train_info, X_test_, y_test_, y_train_, chans, time_points = train_metas_loaded
@@ -317,12 +317,12 @@ if __name__ == "__main__":
         "test-ratio": 0.3
     }
 
-    # name = "task1_s1"
-    # load_path = DATA_DIR + "/physionet-fifs-8-channel/task1/s1-epo.fif"
-    # save_path_folder = MODELS_DIR + "physionet-8-channel/"
+    name = "sythetic-test"
+    load_path = "./synthetic-test.fif"
+    save_path_folder = "../"
 
-    # train(name, load_path, save_path_folder, hyperparameters, save=False)
-    # evaluate(name, saved_path_folder, pltshow=True, save=False, verbose=True)
+    # train(name, load_path, save_path_folder, hyperparameters, save=True)
+    evaluate(name, save_path_folder, pltshow=True, save=False, verbose=True)
     
 
     # task = 2
@@ -340,12 +340,12 @@ if __name__ == "__main__":
 
 
     # ----------- TRAIN ON OPEN BCI DATA --------------
-    name = "data-reuben-2122-2205-3-classes-MI"
-    load_path = DATA_DIR + "/reuben-openbci/data-reuben-2122-2205-3-classes/data-reuben-2122-2205-3-classes-MM-epo.fif"
-    save_path_folder = MODELS_DIR + "reuben-openbci/data-reuben-2122-2205-3-classes/"
-    save_path_folder_latex = "/home/reuben/MEGA/uni/Y5-S1/BIOE6100/final-report-latex/figures/"
+    # name = "data-reuben-2122-2205-3-classes-MI"
+    # load_path = DATA_DIR + "/reuben-openbci/data-reuben-2122-2205-3-classes/data-reuben-2122-2205-3-classes-MM-epo.fif"
+    # save_path_folder = MODELS_DIR + "reuben-openbci/data-reuben-2122-2205-3-classes/"
+    # save_path_folder_latex = "/home/reuben/MEGA/uni/Y5-S1/BIOE6100/final-report-latex/figures/"
 
-    train(name, load_path, save_path_folder, hyperparameters, save=False)
+    # train(name, load_path, save_path_folder, hyperparameters, save=False)
     # evaluate(name, save_path_folder, pltshow=True, save=False, verbose=True)
 
     # load_test_path = DATA_DIR + "/reuben-openbci/data-reuben-2122-2205-3-classes/data-reuben-2122-2205-3-classes-MI-epo.fif"

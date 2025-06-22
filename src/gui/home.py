@@ -4,18 +4,18 @@ from PySide6.QtWidgets import (
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, QKeySequenceEdit,
     QMessageBox, QTabWidget, QLabel, QToolButton
 )
-from training_page import TrainingPage
+from src.gui.training_page import TrainingPage
 from pathlib import Path
 from PySide6.QtGui import QPixmap
 import sys, random
 import json
-from configForm import HotKeyMapper
-from collection_page import CountdownApp
-from info_page import InfoPage
+from src.gui.configForm import HotKeyMapper
+from src.gui.collection_page import CountdownApp
+from src.gui.info_page import InfoPage
 
 
 class Home(QWidget):
-    def __init__(self, cfg_path: Path | str = "./src/gui/db/config.json"):
+    def __init__(self, cfg_path: Path | str = "./data/config.json"):
         super().__init__()
         self.setWindowTitle("Home")
         self.cfg_path = Path(cfg_path)
@@ -130,7 +130,7 @@ class Home(QWidget):
             if self.table.item(row, 0).text() == shortcut:
                 self.table.removeRow(row)
                 break
-    
+
 
 class MainWindow(QWidget):
     """Wrapper window that provides a horizontal tab banner."""
@@ -169,12 +169,12 @@ class MainWindow(QWidget):
 
         #logo
         logo = QLabel()
-        pix = QPixmap("./src/gui/images/EASY_BCI_logo.png"); 
+        pix = QPixmap("./src/gui/images/EASY_BCI_logo.png");
         logo.setPixmap(pix)
         logo.setPixmap(pix.scaledToHeight(24, Qt.SmoothTransformation))
         if pix.isNull():
             print("Logo failed to load check the path!")
-        tabs.setCornerWidget(logo, Qt.TopLeftCorner) 
+        tabs.setCornerWidget(logo, Qt.TopLeftCorner)
 
         # Add pages
         tabs.addTab(Home(), "Home")
@@ -192,7 +192,7 @@ class MainWindow(QWidget):
     def update_label(self, checked: bool) -> None:
         self.toggle.setText("ON" if checked else "OFF")
 
-if __name__ == "__main__":
+def main():
     app = QApplication(sys.argv)
     window = MainWindow()
     window.resize(700, 500)
