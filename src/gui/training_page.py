@@ -41,11 +41,17 @@ class TrainingPage(QMainWindow):
         self.train_button.setCheckable(True)  # Make the button toggleable
         self.train_button.clicked.connect(self.toggle_train_button)
 
+        # Status label for showing current action
+        self.heading_label = QLabel("Ready", self)
+        self.heading_label.setStyleSheet("font-size: 18px;")
+        self.heading_label.setAlignment(Qt.AlignCenter)
+
         # Add widgets to the main layout with alignment to the top
         self.layout.addWidget(self.epochs_label, alignment=Qt.AlignTop)
         self.layout.addWidget(self.epochs_input, alignment=Qt.AlignTop)
         self.layout.addWidget(self.learning_rate_label, alignment=Qt.AlignTop)
         self.layout.addWidget(self.learning_rate_input, alignment=Qt.AlignTop)
+        self.layout.addWidget(self.heading_label, alignment=Qt.AlignTop)
 
         # Add vertical spacer
         spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
@@ -61,11 +67,13 @@ class TrainingPage(QMainWindow):
         if self.train_button.isChecked():
             self.train_button.setStyleSheet("background-color: green; color: white; font-size: 16px;")
             self.train_button.setText("Training...")
+            self.heading_label.setText("Ready to collect data...")
             self.save_to_json()  # Save values to JSON when training starts
             self.start_data_collection() # Start data collection in a separate thread
         else:
             self.train_button.setStyleSheet("background-color: red; color: white; font-size: 16px;")
             self.train_button.setText("Train")
+            self.heading_label.setText("Ready")
 
     def save_to_json(self):
         """Save textbox values to db/categories.json."""
