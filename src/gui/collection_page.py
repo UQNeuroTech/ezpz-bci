@@ -68,7 +68,6 @@ class CountdownApp(QMainWindow):
         textbox_contents = self.input_box.text().strip()
         if textbox_contents:
             # Ensure the directory exists
-            os.makedirs("./db", exist_ok=True)
             json_file_path = "./src/gui/db/categories.json"
     
             # Load existing data if the file exists
