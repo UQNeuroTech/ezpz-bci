@@ -78,7 +78,7 @@ class EEGNetModel(nn.Module): # EEGNET-8,2
         x = self.block2(x)
         x = self.block3(x)
         x = self.flatten(x)
-        print("DEBUG2:", x.shape)
+        # print("DEBUG2:", x.shape)
         x = self.fc(x)
         return x
 
@@ -164,7 +164,7 @@ class EvalModel():
                 inputs = inputs.to(self.device)
                 labels = labels.to(self.device)
                 outputs = self.model(inputs)
-                print("DEBUG7 test logits: ", outputs.shape, outputs)
+                # print("DEBUG7 test logits: ", outputs.shape, outputs)
                 _, predicted = torch.max(outputs.data, 1)
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()

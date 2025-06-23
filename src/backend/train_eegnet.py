@@ -19,6 +19,7 @@ import json
 import csv
 
 from src.backend import eegnet
+# import eegnet
 
 DATA_DIR = "/home/reuben/Documents/eeg-data/"
 MODELS_DIR = "../models/"
@@ -326,12 +327,12 @@ if __name__ == "__main__":
 
     hyperparameters = {
         "epochs": 200,
-        "test-ratio": 0.3
+        "test-ratio": 0.1
     }
 
     name = "ezpz-model"
-    load_path = "./data/ezpz-test-epo.fif"
-    save_path_folder = "data/"
+    load_path = "../../data/ezpz-test-epo.fif"
+    save_path_folder = "../../data/"
 
     # train(name, load_path, save_path_folder, hyperparameters, save=True)
     evaluate(name, save_path_folder, pltshow=True, save=False, verbose=True)

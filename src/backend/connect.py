@@ -1,5 +1,6 @@
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 
+BOARD_ID = BoardIds.CYTON_BOARD
 
 def initalize_board(board_id, port):
     """

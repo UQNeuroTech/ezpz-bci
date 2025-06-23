@@ -3,8 +3,12 @@ import time
 
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 
-from src.backend.connect import initalize_board
-from src.backend import eegnet
+# from src.backend.connect import initalize_board
+# from src.backend import eegnet
+
+from connect import initalize_board
+import eegnet
+
 from process_openbci_data import convert_to_mne
 
 import json
@@ -14,11 +18,11 @@ import numpy as np
 
 import mne
 
-MODEL_PATH = "./data/ezpz-model.pth"  # e.g. "models/my_model.pth"
-CHANS = 8
-TIME_POINTS = 801
+MODEL_PATH = "../../data/ezpz-model.pth"  # e.g. "models/my_model.pth"
+# CHANS = 8
+# TIME_POINTS = 801
 
-with open("./data/ezpz-model.json", 'r') as json_file1:
+with open("../../data/ezpz-model.json", 'r') as json_file1:
     train_metas = json.load(json_file1)
 
 # These values should match your training data.
@@ -40,6 +44,7 @@ marker_dict = {
 def main():
     # board_id = BoardIds.SYNTHETIC_BOARD
     board_id = BoardIds.CYTON_BOARD
+    # board_id = BoardIds.CROWN_BOARD
     board = initalize_board(board_id, "/dev/ttyUSB0")  # Adjust port as needed
 
     iter = 0
@@ -98,7 +103,7 @@ def classify_eeg_sample(eeg_sample):
 
     # board_id = BoardIds.SYNTHETIC_BOARD
     board_id = BoardIds.CYTON_BOARD
-    raw = convert_to_mne(board_id, " ", " ", "data", eeg_sample, None, save=False, classify=True, show_ui=False)
+    raw = convert_to_mne(board_id, " ", " ", "data", eeg_sample, save=False, classify=True, show_ui=False)
 
     # print("raw:", raw, " | data: ", raw.get_data().shape)
     # print("raw.info:", raw.info)
