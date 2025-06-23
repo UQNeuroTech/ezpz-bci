@@ -72,9 +72,9 @@ def main(ui_callback, is_running):
     prompt_order = add_nothing_prompts(prompt_order)
     print(prompt_order)
 
-    board_id = BoardIds.SYNTHETIC_BOARD
+    # board_id = BoardIds.SYNTHETIC_BOARD
     # board_id = BoardIds.CROWN_BOARD
-    # board_id = BoardIds.CYTON_BOARD
+    board_id = BoardIds.CYTON_BOARD
     board = initalize_board(board_id, "/dev/ttyUSB0")
 
     iter = 0

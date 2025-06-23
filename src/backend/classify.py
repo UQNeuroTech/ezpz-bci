@@ -40,9 +40,9 @@ marker_dict = {
 }
 
 def main():
-    board_id = BoardIds.SYNTHETIC_BOARD
-    # board_id = BoardIds.CYTON_BOARD
-    board = initalize_board(board_id, None)
+    # board_id = BoardIds.SYNTHETIC_BOARD
+    board_id = BoardIds.CYTON_BOARD
+    board = initalize_board(board_id, "/dev/ttyUSB0")  # Adjust port as needed
 
     iter = 0
 
@@ -74,24 +74,20 @@ def main():
 
             eeg_sample = [data[i].tolist() for i in channels]
 
-            prediction = classify_eeg_sample(eeg_sample)
-            marker = marker_dict[prediction]
-            print(f"Iteration: {iter}, Prediction: {marker} ({prediction})")
+            try:
+                prediction, logits = classify_eeg_sample(eeg_sample)
+                marker = marker_dict[prediction]
+                print("logits:", logits)
+                print(f"Iteration: {iter}, Prediction: {marker} ({prediction})")
+            except Exception as e:
+                print(f"Error classifying EEG sample: {e}")
+                continue
 
             # eeg_samples.append(eeg_sample)
             # eeg_markers.append(prompt_order[prompt_iter])
 
     board.stop_stream()
     board.release_session()
-
-    samples_path = "eeg_samples.json"
-    markers_path = "eeg_markers.json"
-
-    with open(samples_path, 'w') as json_file1:
-        json.dump(eeg_samples, json_file1)
-
-    with open(markers_path, 'w') as json_file2:
-        json.dump(eeg_markers, json_file2)
 
 
 
@@ -102,7 +98,6 @@ def classify_eeg_sample(eeg_sample):
 
     print("eeg_sample type/shape:", type(eeg_sample), np.array(eeg_sample).shape)
 
-
     # board_id = BoardIds.SYNTHETIC_BOARD
     board_id = BoardIds.CYTON_BOARD
     raw = convert_to_mne(board_id, " ", " ", "data", eeg_sample, None, save=False, classify=True, show_ui=False)
@@ -112,7 +107,9 @@ def classify_eeg_sample(eeg_sample):
     # print("data:", raw.get_data())
 
     # Z-score normalization (adapt as needed)
-    normed = (raw.get_data() - TRAIN_MEAN) / TRAIN_STD
+
+    scaled = raw.get_data() / 1000000  # BrainFlow returns uV, convert to V for MNE
+    normed = (scaled - TRAIN_MEAN) / TRAIN_STD
 
     # Convert to numpy
     eeg_np = np.array(normed)
@@ -127,7 +124,7 @@ def classify_eeg_sample(eeg_sample):
         logits = model(eeg_tensor)
         pred_class = torch.argmax(logits, dim=1).item()
 
-    return pred_class
+    return pred_class, logits
 
 # def classify_eeg_sample(eeg_sample):
 #     """
