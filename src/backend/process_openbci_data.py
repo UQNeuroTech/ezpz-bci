@@ -153,4 +153,4 @@ if __name__ == "__main__":
     # board_id = BoardIds.SYNTHETIC_BOARD
     # board_id = BoardIds.CYTON_BOARD
     board_id = BoardIds.CYTON_BOARD
-    convert_to_mne(board_id, name, name, "data", samples, markers, save=True)
+    convert_to_mne(board_id, name, name, "../../data", samples, markers, save=True)
