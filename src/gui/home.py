@@ -14,6 +14,7 @@ from src.gui.configForm import HotKeyMapper
 from src.gui.collection_page import CountdownApp
 from src.gui.info_page import InfoPage
 from src.gui.dataviz import DataVIz
+from src.gui.connect_device import Connect
 
 
 class Home(QWidget):
@@ -195,6 +196,7 @@ class MainWindow(QWidget):
 
         # Add pages
         tabs.addTab(Home(), "Home")
+        tabs.addTab(Connect(), "Connect")
         tabs.addTab(HotKeyMapper(), "Config")
         tabs.addTab(TrainingPage(), "Train")
         tabs.addTab(CountdownApp(), "Collect")
