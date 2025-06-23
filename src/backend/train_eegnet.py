@@ -322,6 +322,12 @@ def batch_evaluate(name, subject_range, saved_path_folder, save=True):
     plt.show()
 
 if __name__ == "__main__":
+    import os
+    import sys
+    # Add the project root directory to Python path
+    project_root = os.path.dirname("../../")
+    sys.path.insert(0, project_root)
+
     print("Running 'train_eegnet.py' directly")
 
     hyperparameters = {
@@ -330,8 +336,8 @@ if __name__ == "__main__":
     }
 
     name = "ezpz-model"
-    load_path = "./data/ezpz-test-epo.fif"
-    save_path_folder = "data/"
+    load_path = "../../data/ezpz-test-epo.fif"
+    save_path_folder = "../../data/"
 
     # train(name, load_path, save_path_folder, hyperparameters, save=True)
     evaluate(name, save_path_folder, pltshow=True, save=False, verbose=True)
