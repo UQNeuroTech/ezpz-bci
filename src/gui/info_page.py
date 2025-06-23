@@ -33,7 +33,6 @@ class InfoPage(QMainWindow):
         self.info_text.setStyleSheet("font-size: 14px;")
         self.info_text.setText("""
 Brain Flow Protocol:
----------------------
 Brain Flow is a protocol designed to facilitate communication between brain-computer interfaces (BCIs) and external devices. It provides a standardized framework for data acquisition, processing, and transmission, ensuring compatibility across various hardware and software platforms.
 
 Key Features:
@@ -43,7 +42,6 @@ Key Features:
 - Open-source and community-driven development
 
 Licensing Agreements:
-----------------------
 Brain Flow is licensed under the MIT License, which permits the use, modification, and distribution of the software for both commercial and non-commercial purposes. The license ensures that the protocol remains open and accessible to developers worldwide.
 
 MIT License:
@@ -56,8 +54,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         # Add widgets to layout
         self.layout.addWidget(self.title_label)
-        self.layout.addWidget(self.image_label)
+        
         self.layout.addWidget(self.info_text)
+        self.layout.addWidget(self.image_label, alignment=Qt.AlignCenter)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

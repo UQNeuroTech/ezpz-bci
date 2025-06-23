@@ -2,7 +2,7 @@ from PySide6.QtCore    import Qt, Slot, QFileSystemWatcher
 from PySide6.QtWidgets import (
     QApplication, QWidget, QHBoxLayout, QVBoxLayout, QFormLayout,
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, QKeySequenceEdit,
-    QMessageBox, QTabWidget, QLabel, QToolButton
+    QMessageBox, QTabWidget, QLabel, QToolButton, QHeaderView
 )
 from PySide6.QtGui import QIcon 
 from src.gui.training_page import TrainingPage
@@ -38,9 +38,13 @@ class Home(QWidget):
         # three columns: Shortcut | Command | (Remove button)
         self.table = QTableWidget(0, 3)
         self.table.setHorizontalHeaderLabels(["Shortcut", "Command", ""])
-        self.table.horizontalHeader().setStretchLastSection(False)
+        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)  # First column scales
+        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)  # Second column scales
+        self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Fixed)    # Third column fixed width
+        self.table.setColumnWidth(2, 100)  # Set fixed width for the last column
         self.table.setAlternatingRowColors(True)
         self.table.verticalHeader().setVisible(False)
+
 
         layout.addWidget(self.table)
 
