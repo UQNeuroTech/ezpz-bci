@@ -78,7 +78,7 @@ def main():
                 marker = marker_dict[prediction]
                 print("logits:", logits)
                 print(f"Iteration: {iter}, Prediction: {marker} ({prediction})")
-                press_key(marker[prediction])
+                press_key(marker)
             except Exception as e:
                 print(f"Error classifying EEG sample: {e}")
                 continue
