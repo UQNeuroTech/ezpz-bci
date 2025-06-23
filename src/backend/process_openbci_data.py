@@ -5,7 +5,7 @@ from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 import matplotlib.pyplot as plt
 
 # todo: show ui in another window, cannot be shown in background thread
-show_ui = False
+show_ui = True
 
 def load_openbci_data(jsons_path, verbose=False):
     
@@ -153,15 +153,7 @@ def convert_to_mne(name, save_name, save_path, samples, markers, save=True):
         # Save Epochs
         epochs.save(save_path + "/" + save_name + '-epo.fif', overwrite=True)
 
-
 if __name__ == "__main__":
-    # prompt_type = 'MI'
-    # name = "data-reuben-2122-2205-3-classes"
-    # jsons_path = DATA_DIR + "/reuben-openbci/" + name
-    # samples, markers = load_openbci_data(jsons_path, prompt_type, verbose=True)
-    # convert_to_mne(name, name + '-' + prompt_type, jsons_path, samples, markers, save=False)
-
-    prompt_type = 'MM'
-    name = "data-reuben-1519-1506-3-classes"
-    samples, markers = load_openbci_data(".", verbose=True)
-    convert_to_mne(name, name + '-', ".", samples, markers, save=True)
+    name = "ezpz-test"
+    samples, markers = load_openbci_data("data/", verbose=True)
+    convert_to_mne(name, name, "data", samples, markers, save=True)

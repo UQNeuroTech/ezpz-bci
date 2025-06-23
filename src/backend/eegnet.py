@@ -78,7 +78,7 @@ class EEGNetModel(nn.Module): # EEGNET-8,2
         x = self.block2(x)
         x = self.block3(x)
         x = self.flatten(x)
-        print("DEBUG2:", x.shape)
+        # print("DEBUG2:", x.shape)
         x = self.fc(x)
         return x
 
@@ -159,8 +159,8 @@ class EvalModel():
 
         with torch.no_grad():
             for inputs, labels in test_loader:
-                print(inputs.shape, inputs)
-                print("DEBUG1:", inputs[0].shape, inputs[0])
+                # print(inputs.shape, inputs)
+                # print("DEBUG1:", inputs[0].shape, inputs[0])
                 inputs = inputs.to(self.device)
                 labels = labels.to(self.device)
                 outputs = self.model(inputs)
