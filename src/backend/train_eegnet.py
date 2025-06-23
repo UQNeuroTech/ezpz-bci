@@ -18,7 +18,8 @@ import pandas as pd
 import json
 import csv
 
-from src.backend import eegnet
+# from src.backend import eegnet
+import eegnet
 
 DATA_DIR = "/home/reuben/Documents/eeg-data/"
 MODELS_DIR = "../models/"
@@ -331,7 +332,7 @@ if __name__ == "__main__":
 
     name = "ezpz-model"
     load_path = "./data/ezpz-test-epo.fif"
-    save_path_folder = "data"
+    save_path_folder = "data/"
 
     train(name, load_path, save_path_folder, hyperparameters, save=True)
     # evaluate(name, save_path_folder, pltshow=True, save=False, verbose=True)
