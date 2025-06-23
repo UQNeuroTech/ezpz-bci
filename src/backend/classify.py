@@ -156,9 +156,9 @@ def classify_eeg_sample(eeg_sample):
 
 
 if __name__ == "__main__":
-    # import os
-    # import sys  
-    # # Add the project root directory to Python path
-    # project_root = os.path.dirname("../../")
-    # sys.path.insert(0, project_root)
+    import os
+    import sys
+    # Add the project root directory to Python path
+    project_root = os.path.dirname("../../")
+    sys.path.insert(0, project_root)
     main()
