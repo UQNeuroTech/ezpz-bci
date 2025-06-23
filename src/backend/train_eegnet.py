@@ -117,8 +117,20 @@ def train(name, load_path, save_path_folder, hypers, save=True):
     if save:
         torch.save(trained_eegnet_model.state_dict(), save_path_folder + name + '.pth')
     
-    train_metas = [train_info, X_test_.tolist(), y_test_.tolist(), y_train_.tolist(), 
-                   chans, time_points, class_counts, eeg_data_mean, eeg_data_std]
+    # train_metas = [train_info, X_test_.tolist(), y_test_.tolist(), y_train_.tolist(),
+    #                chans, time_points, class_counts, eeg_data_mean, eeg_data_std]
+
+    train_metas = {
+        "train_info": train_info,
+        "X_test_": X_test_.tolist(),
+        "y_test_": y_test_.tolist(),
+        "y_train_": y_train_.tolist(),
+        "chans": chans,
+        "time_points": time_points,
+        "class_counts": class_counts,
+        "eeg_data_mean": eeg_data_mean,
+        "eeg_data_std": eeg_data_std
+    }
 
     if save:
         with open(save_path_folder + name + ".json", 'w') as json_file1:
@@ -128,24 +140,24 @@ def evaluate(name, saved_path_folder, pltshow=False, save=True, verbose=False):
     saved_path = saved_path_folder + name + ".pth"
     
     with open(saved_path_folder + name + ".json", 'r') as json_file1:
-        train_metas_loaded = json.load(json_file1)
+        tm = json.load(json_file1)
 
-    train_info, X_test_, y_test_, y_train_, chans, time_points, class_counts, _, _ = train_metas_loaded
-    print("class_counts:", class_counts)
+    # train_info, X_test_, y_test_, y_train_, chans, time_points, class_counts, _, _ = train_metas_loaded
+    print("class_counts:", tm["class_counts"])
     # print(train_metas_loaded)
     # train_info, X_test_, y_test_, y_train_, chans, time_points = train_metas_loaded
 
     if verbose: 
         print("-------- Evaluating", name, "-----------")
-        print("y_train:", y_train_)
+        print("y_train:", tm["y_train_"])
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    X_test = torch.Tensor(X_test_).unsqueeze(1).to(device)
-    y_test = torch.LongTensor(y_test_).to(device)
+    X_test = torch.Tensor(tm["X_test_"]).unsqueeze(1).to(device)
+    y_test = torch.LongTensor(tm["y_test_"]).to(device)
 
     test_dataset = TensorDataset(X_test, y_test)
 
-    trained_eegnet_model = eegnet.EEGNetModel(chans=chans, time_points=time_points).to(device)
+    trained_eegnet_model = eegnet.EEGNetModel(chans=tm["chans"], time_points=tm["time_points"]).to(device)
     trained_eegnet_model.load_state_dict(torch.load(saved_path, map_location=torch.device('cpu')))
     trained_eegnet_model.eval()
     classes_list = ['rest', 'left-fist', 'right-fist']
@@ -154,7 +166,7 @@ def evaluate(name, saved_path_folder, pltshow=False, save=True, verbose=False):
     cf_matrix = eval_model.plot_confusion_matrix(test_dataset, classes_list, pltshow=pltshow, save=save)
 
     fig = plt.figure()
-    plt.plot(train_info[0], train_info[1], label="Loss")
+    plt.plot(tm["train_info"][0], tm["train_info"][1], label="Loss")
     plt.title("Loss Curve")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
@@ -163,7 +175,7 @@ def evaluate(name, saved_path_folder, pltshow=False, save=True, verbose=False):
     else: plt.close(fig)
 
     fig = plt.figure()
-    plt.plot(train_info[0], train_info[2], label="Accuracy")
+    plt.plot(tm["train_info"][0], tm["train_info"][2], label="Accuracy")
     plt.title("Accuracy Curve")
     plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
@@ -317,13 +329,12 @@ if __name__ == "__main__":
         "test-ratio": 0.3
     }
 
-    name = "sythetic-test"
-    load_path = "./synthetic-test.fif"
-    save_path_folder = "../"
+    name = "ezpz-model"
+    load_path = "./ezpz-epochs-epo.fif"
+    save_path_folder = "./"
 
     # train(name, load_path, save_path_folder, hyperparameters, save=True)
     evaluate(name, save_path_folder, pltshow=True, save=False, verbose=True)
-    
 
     # task = 2
     # load_path_folder = DATA_DIR + "/physionet-fifs-8-channel/task"+ str(task) +"/"
