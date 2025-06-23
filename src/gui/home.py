@@ -12,6 +12,7 @@ import json
 from src.gui.configForm import HotKeyMapper
 from src.gui.collection_page import CountdownApp
 from src.gui.info_page import InfoPage
+from src.gui.dataviz import DataVIz
 
 
 class Home(QWidget):
@@ -182,6 +183,7 @@ class MainWindow(QWidget):
         tabs.addTab(TrainingPage(), "Train")
         tabs.addTab(CountdownApp(), "Collect")
         tabs.addTab(InfoPage(),        "Info")
+        tabs.addTab(DataVIz(), "Viz")
 
         # on/off in tab bar
         self.toggle.toggled.connect(self.update_label)
