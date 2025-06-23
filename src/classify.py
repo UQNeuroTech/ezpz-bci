@@ -3,6 +3,7 @@ import time
 from pprint import pprint
 
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
+from backend.key_actuate import press_key
 
 import json
 import random
@@ -77,7 +78,9 @@ def main():
 
         prediction = classify_eeg_sample(eeg_sample)
         marker = marker_dict[prediction]
+        press_key(prediction)
         print(f"Iteration: {iter}, Prediction: {marker} ({prediction})")
+        
 
         # eeg_samples.append(eeg_sample)
         # eeg_markers.append(prompt_order[prompt_iter])
