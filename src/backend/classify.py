@@ -6,6 +6,7 @@ from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 from src.backend.connect import initalize_board
 from src.backend import eegnet
 from process_openbci_data import convert_to_mne
+from src.backend.key_actuate import press_key
 
 import json
 
@@ -77,6 +78,7 @@ def main():
                 marker = marker_dict[prediction]
                 print("logits:", logits)
                 print(f"Iteration: {iter}, Prediction: {marker} ({prediction})")
+                press_key(prediction)
             except Exception as e:
                 print(f"Error classifying EEG sample: {e}")
                 continue
