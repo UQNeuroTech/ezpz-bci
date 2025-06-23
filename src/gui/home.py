@@ -4,6 +4,7 @@ from PySide6.QtWidgets import (
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, QKeySequenceEdit,
     QMessageBox, QTabWidget, QLabel, QToolButton
 )
+from PySide6.QtGui import QIcon 
 from src.gui.training_page import TrainingPage
 from pathlib import Path
 from PySide6.QtGui import QPixmap
@@ -207,6 +208,7 @@ class MainWindow(QWidget):
 
 def main():
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon("./src/gui/images/window-icon.png"))  # Set application-level icon
     window = MainWindow()
     window.resize(700, 500)
     window.show()
