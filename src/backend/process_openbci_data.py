@@ -73,7 +73,7 @@ def load_openbci_data(jsons_path, verbose=False, show_ui = True):
 
     return eeg_samples_unbuffered, eeg_markers_unbuffered
 
-def convert_to_mne(name, board_id, save_name, save_path, samples, markers, save=True):
+def convert_to_mne(board_id, name, save_name, save_path, samples, markers, save=True, show_ui=True, classify=False):
     # adapted from: https://brainflow.readthedocs.io/en/stable/notebooks/brainflow_mne.html 
 
     params = BrainFlowInputParams()
@@ -90,9 +90,9 @@ def convert_to_mne(name, board_id, save_name, save_path, samples, markers, save=
 
     # Creating MNE objects from brainflow data arrays
     ch_types = ['eeg'] * len(eeg_channels)
-    ch_types.append('stim')
+    if not classify: ch_types.append('stim')
     ch_names = BoardShim.get_eeg_names(board_id.value)
-    ch_names.append('STI 014')
+    if not classify:ch_names.append('STI 014')
 
     print("ch_types", ch_types)
     print("ch_names", ch_names)
@@ -102,8 +102,9 @@ def convert_to_mne(name, board_id, save_name, save_path, samples, markers, save=
 
     raw = mne.io.RawArray(eeg_data, info)
     print("----------events--------")
-    events = mne.find_events(raw)#, stim_channel="STI 014")
-    print(events[:5])  # show the first 5 events
+    if not classify: 
+        events = mne.find_events(raw)#, stim_channel="STI 014")
+        print(events[:5])  # show the first 5 events
     raw.set_montage("standard_1005")
     raw = raw.filter(l_freq=0.2, h_freq=30, method='iir')  # bandpass filter
 
@@ -114,45 +115,36 @@ def convert_to_mne(name, board_id, save_name, save_path, samples, markers, save=
         raw.plot_psd(average=False)
         plt.show()
 
-    # Create EPOCHS
-    event_dict = {
-        "Rest": 1,
-        "Left Fist": 2,
-        "Right Fist": 3
-    }
-    tmin, tmax = -0.2, 2  # define epochs around events (in s)
-    epochs = mne.Epochs(raw, events, event_dict, tmin, tmax, preload=True)
+    if not classify:
+        # Create EPOCHS
+        event_dict = {
+            "Rest": 1,
+            "Left Fist": 2,
+            "Right Fist": 3
+        }
+        tmin, tmax = -0.2, 2  # define epochs around events (in s)
+        epochs = mne.Epochs(raw, events, event_dict, tmin, tmax, preload=True)
 
-    print(epochs)
-    print(epochs.event_id)
+        print(epochs)
+        print(epochs.event_id)
 
-    # epochs["Left Hand"].average().plot()
-    # epochs["Right Hand"].average().plot()
-    # epochs["Rest"].average().plot()
+        # Plot epochs
+        if show_ui:
+            epochs.plot(scalings='auto', events=True)
 
-    # # Plot topomaps
-    # times = np.arange(0, 1, 0.1)
-    # epochs.average().plot_topomap(times, ch_type='eeg')
-    # epochs["Left Hand"].average().plot_topomap(times, ch_type='eeg')
-    # epochs["Right Hand"].average().plot_topomap(times, ch_type='eeg')
-    # epochs["Rest"].average().plot_topomap(times, ch_type='eeg')
+            plt.show()
 
-    # Plot epochs
-    if show_ui:
-        epochs.plot(scalings='auto', events=True)
+        if save:
+            # Save Epochs
+            epochs.save(save_path + "/" + save_name + '-epo.fif', overwrite=True)
 
-        plt.show()
-
-    if save:
-        # Save Epochs
-        epochs.save(save_path + "/" + save_name + '-epo.fif', overwrite=True)
-
-    return epochs
+    return raw
 
 if __name__ == "__main__":
     name = "ezpz-test"
     samples, markers = load_openbci_data("data/", verbose=True)
 
-    board_id = BoardIds.SYNTHETIC_BOARD
+    # board_id = BoardIds.SYNTHETIC_BOARD
     # board_id = BoardIds.CYTON_BOARD
+    board_id = BoardIds.CYTON_BOARD
     convert_to_mne(board_id, name, name, "data", samples, markers, save=True)
