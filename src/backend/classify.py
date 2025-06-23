@@ -99,6 +99,8 @@ def classify_eeg_sample(eeg_sample):
     # Convert to numpy if needed
     eeg_np = np.array(eeg_sample)
 
+    
+
     # Z-score normalization (adapt as needed)
     eeg_np = (eeg_np - TRAIN_MEAN) / TRAIN_STD
 
