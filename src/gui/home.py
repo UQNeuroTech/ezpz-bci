@@ -169,7 +169,7 @@ class MainWindow(QWidget):
 
         #logo
         logo = QLabel()
-        pix = QPixmap("./src/gui/images/EASY_BCI_logo.png");
+        pix = QPixmap("./src/gui/images/ezpzbci.svg");
         logo.setPixmap(pix)
         logo.setPixmap(pix.scaledToHeight(24, Qt.SmoothTransformation))
         if pix.isNull():
