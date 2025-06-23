@@ -1,5 +1,6 @@
 from PySide6.QtCore import QThread, Signal
 from src.backend.train_eegnet import train
+from src.backend.process_openbci_data import load_openbci_data, convert_to_mne
 
 
 class TrainingThread(QThread):
@@ -8,6 +9,8 @@ class TrainingThread(QThread):
 
     def run(self):
         try:
+            samples, markers = load_openbci_data("./data")
+            convert_to_mne("mne_data", "mne_data", "./data", samples, markers)
             hyperparameters = {
                 "epochs": 200,
                 "test-ratio": 0.3
