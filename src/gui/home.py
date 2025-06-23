@@ -1,6 +1,6 @@
 from PySide6.QtCore    import Qt, Slot, QFileSystemWatcher
 from PySide6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QFormLayout,
+    QApplication, QWidget, QHBoxLayout, QVBoxLayout, QFormLayout,
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, QKeySequenceEdit,
     QMessageBox, QTabWidget, QLabel, QToolButton
 )
@@ -12,6 +12,7 @@ import json
 from src.gui.configForm import HotKeyMapper
 from src.gui.collection_page import CountdownApp
 from src.gui.info_page import InfoPage
+from src.gui.dataviz import DataVIz
 
 
 class Home(QWidget):
@@ -21,6 +22,17 @@ class Home(QWidget):
         self.cfg_path = Path(cfg_path)
 
         layout = QVBoxLayout(self)
+
+        # Add title image
+        title_image = QLabel()
+        pixmap = QPixmap("./src/gui/images/ezpz-bci.png")  # Update the path to your image
+        title_image.setPixmap(pixmap.scaledToWidth(600, Qt.SmoothTransformation))  # Adjust width as needed
+
+        # Center the title image
+        image_layout = QHBoxLayout()
+        image_layout.addWidget(title_image)
+        image_layout.setAlignment(Qt.AlignCenter)
+        layout.addLayout(image_layout)
 
         # three columns: Shortcut | Command | (Remove button)
         self.table = QTableWidget(0, 3)
@@ -169,12 +181,12 @@ class MainWindow(QWidget):
 
         #logo
         logo = QLabel()
-        pix = QPixmap("./src/gui/images/EASY_BCI_logo.png");
+        pix = QPixmap("./src/gui/images/ezpzbci.svg");
         logo.setPixmap(pix)
         logo.setPixmap(pix.scaledToHeight(24, Qt.SmoothTransformation))
         if pix.isNull():
             print("Logo failed to load check the path!")
-        tabs.setCornerWidget(logo, Qt.TopLeftCorner)
+        # tabs.setCornerWidget(logo, Qt.TopLeftCorner)
 
         # Add pages
         tabs.addTab(Home(), "Home")
@@ -182,6 +194,7 @@ class MainWindow(QWidget):
         tabs.addTab(TrainingPage(), "Train")
         tabs.addTab(CountdownApp(), "Collect")
         tabs.addTab(InfoPage(),        "Info")
+        tabs.addTab(DataVIz(), "Viz")
 
         # on/off in tab bar
         self.toggle.toggled.connect(self.update_label)
