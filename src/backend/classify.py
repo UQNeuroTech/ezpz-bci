@@ -107,27 +107,27 @@ def classify_eeg_sample(eeg_sample):
     board_id = BoardIds.CYTON_BOARD
     raw = convert_to_mne(board_id, " ", " ", "data", eeg_sample, None, save=False, classify=True, show_ui=False)
 
-    print("raw:", raw)
+    # print("raw:", raw, " | data: ", raw.get_data().shape)
+    # print("raw.info:", raw.info)
+    # print("data:", raw.get_data())
 
-    # # Convert to numpy if needed
-    # eeg_np = np.array(eeg_sample)
+    # Z-score normalization (adapt as needed)
+    normed = (raw.get_data() - TRAIN_MEAN) / TRAIN_STD
 
+    # Convert to numpy
+    eeg_np = np.array(normed)
 
-    # # Z-score normalization (adapt as needed)
-    # eeg_np = (eeg_np - TRAIN_MEAN) / TRAIN_STD
+    # Reshape to (batch, 1, chans, time_points)
+    eeg_tensor = torch.tensor(eeg_np, dtype=torch.float32).unsqueeze(0).unsqueeze(0)  # [1, 1, chans, time_points]
 
-    # # Reshape to (batch, 1, chans, time_points)
-    # eeg_tensor = torch.tensor(eeg_np, dtype=torch.float32).unsqueeze(0).unsqueeze(0)  # [1, 1, chans, time_points]
+    print("eeg_tensor.shape:", eeg_tensor.shape)
 
-    # print("eeg_tensor.shape:", eeg_tensor.shape)
+    # Model prediction
+    with torch.no_grad():
+        logits = model(eeg_tensor)
+        pred_class = torch.argmax(logits, dim=1).item()
 
-    # # Model prediction
-    # with torch.no_grad():
-    #     logits = model(eeg_tensor)
-    #     pred_class = torch.argmax(logits, dim=1).item()
-
-    # return pred_class
-    return 0
+    return pred_class
 
 # def classify_eeg_sample(eeg_sample):
 #     """
