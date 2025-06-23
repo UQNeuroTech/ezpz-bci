@@ -18,8 +18,7 @@ import pandas as pd
 import json
 import csv
 
-# from src.backend import eegnet
-import eegnet
+from src.backend import eegnet
 
 DATA_DIR = "/home/reuben/Documents/eeg-data/"
 MODELS_DIR = "../models/"
