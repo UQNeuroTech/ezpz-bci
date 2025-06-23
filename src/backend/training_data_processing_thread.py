@@ -9,7 +9,7 @@ class TrainingThread(QThread):
 
     def run(self):
         try:
-            samples, markers = load_openbci_data("./data")
+            samples, markers = load_openbci_data("./data", False, False)
             convert_to_mne("mne_data", "mne_data", "./data", samples, markers)
             hyperparameters = {
                 "epochs": 200,

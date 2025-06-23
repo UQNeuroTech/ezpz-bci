@@ -4,10 +4,7 @@ import mne
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 import matplotlib.pyplot as plt
 
-# todo: show ui in another window, cannot be shown in background thread
-show_ui = True
-
-def load_openbci_data(jsons_path, verbose=False):
+def load_openbci_data(jsons_path, verbose=False, show_ui = True):
     
     # Convert relative paths to absolute for clearer error messages
     import os
