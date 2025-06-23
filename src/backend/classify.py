@@ -3,8 +3,7 @@ import time
 
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 
-# from src.backend.connect import initalize_board
-from connect import initalize_board
+from src.backend.connect import initalize_board
 from src.backend import eegnet
 from process_openbci_data import convert_to_mne
 
