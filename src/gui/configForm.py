@@ -27,7 +27,7 @@ class HotKeyMapper(QWidget):
         self.setWindowTitle("Hot-Key Mapper")
 
         # collect command mappings
-        self.commands = load_commands(Path("./data/categories.json"))
+        self.commands = load_commands(Path("./data/categories.json"), [])
         self.command_box = QComboBox()
         self.command_box.addItems(self.commands) 
         self.key_edit = QKeySequenceEdit()
@@ -52,29 +52,28 @@ class HotKeyMapper(QWidget):
         layout.addWidget(self.table)
 
         #on file change refresgh table
-        self.refresh()
+        self.refresh(self.commands)
         self.watcher = QFileSystemWatcher(["./data/categories.json"])
-        self.watcher.fileChanged.connect(self.on_file_changed)
+        self.watcher.fileChanged.connect(lambda path: self.on_file_changed(path, self.commands))
 
         # storage for live QShortcuts
         self._shortcuts = {}   # {QKeySequence().toString(): QShortcut}
 
-    def refresh(self):
+    def refresh(self, commands):
         """
         Refresh the comand box options for the drop down
         """
-        self.command_box.addItems(load_commands(Path("./data/categories.json")))
+        self.command_box.addItems(load_commands(Path("./data/categories.json"), commands))
 
     @Slot()
-    def on_file_changed(self, changed_path):
+    def on_file_changed(self, changed_path, commands):
         """
         QFileSystemWatcher stops watching a file if it is removed and
         recreated. Makes QFileSystemWatcher persistant
         """
         if changed_path not in self.watcher.files():
             self.watcher.addPath(changed_path)
-
-        self.refresh()                     # re-run your logic
+        self.refresh(commands)                     # re-run your logic
 
     def add_mapping(self):
         """
@@ -102,6 +101,9 @@ class HotKeyMapper(QWidget):
 
         #add mapping to config file
         add_to_file(key_str, cmd_name, path)
+        # Reload the commands list
+        self.commands = load_commands(Path("./data/categories.json"), self.commands)
+        self.refresh(self.commands)
 
         # Create a live QShortcut bound to this window
         sc = QShortcut(key_seq, self)
@@ -163,7 +165,7 @@ def add_to_file(key, cmd, path):
         json.dump(data, f, indent=2)
     tmp.replace(path)
 
-def load_commands(cfg_path):
+def load_commands(cfg_path, commands):
     """Read cfg_path and return a list of trained commands"""
     if not cfg_path.exists():
         print("Config file missing using no commands.")
@@ -172,8 +174,20 @@ def load_commands(cfg_path):
     with cfg_path.open(encoding="utf-8") as f:
         data = json.load(f)
     list_of_commands = []
+    found = False
 
-    
+
     for i in data.get("categories", []):
-        list_of_commands.append(i)
+        print(f"Checking category: {i}")
+        
+        found = False  # Reset `found` here to avoid issues from previous iterations
+        for j in commands:
+            print(f"Comparing with command: {j}")
+            if i == j:
+                found = True
+                break  # Exit the inner loop early once a match is found
+        
+        # If no match was found, append the item
+        if not found:
+            list_of_commands.append(i)
     return list_of_commands

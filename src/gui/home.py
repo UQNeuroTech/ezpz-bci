@@ -55,11 +55,11 @@ class Home(QWidget):
 
         self.refreshHome()
 
-        self.watcher = QFileSystemWatcher(["./src/gui/db/config.json"])
+        self.watcher = QFileSystemWatcher(["./data/config.json"])
         self.watcher.fileChanged.connect(self.on_config_changed)
     def refreshHome(self):
         self.table.blockSignals(True)        # no signals while rebuilding
-        self.table.setRowCount(0)            # ← clear *rows* only
+        self.table.setRowCount(0)            # clear *rows* only
 
         self._load_mappings()
 
@@ -109,9 +109,9 @@ class Home(QWidget):
         """
         if changed_path not in self.watcher.files():
             self.watcher.addPath(changed_path)
-        self.refreshHome()                     # re-run your logic
+        self.refreshHome()                     # refresh home page table commands
     def _remove_mapping(self, shortcut: str) -> None:
-        # 1. Ask for confirmation (optional)
+        # 1. Ask for confirmation
         if QMessageBox.question(
             self, "Delete mapping",
             f"Remove shortcut '{shortcut}'?\n(This can’t be undone)",
@@ -119,7 +119,7 @@ class Home(QWidget):
         ) != QMessageBox.Yes:
             return
 
-        # 2. Update JSON on disk
+        # LOad JSON
         if self.cfg_path.exists() and self.cfg_path.stat().st_size:
             try:
                 data = json.loads(self.cfg_path.read_text(encoding="utf-8"))
@@ -128,7 +128,7 @@ class Home(QWidget):
         else:
             data = {}
 
-        # Normalise list→dict if needed
+        # Normalise data
         if isinstance(data, list):
             tmp = {}
             for d in data:
@@ -142,7 +142,7 @@ class Home(QWidget):
             tmp_file.write_text(json.dumps(data, indent=2), encoding="utf-8")
             tmp_file.replace(self.cfg_path)
 
-        # 3. Remove row from UI
+        #Remove row from UI
         for row in range(self.table.rowCount()):
             if self.table.item(row, 0).text() == shortcut:
                 self.table.removeRow(row)
@@ -161,10 +161,10 @@ class MainWindow(QWidget):
         self.toggle.setChecked(False)             # default = OFF
         self.toggle.setText("OFF")                # label so users know the state
 
-        # Colour rules: blue when off, green when on style
+        # Colour rules: red when off, green when on style
         self.toggle.setStyleSheet("""
             QToolButton {
-                background-color: #FF0000;          /* blue */
+                background-color: #FF0000;          /* red */
                 color: white;
                 padding: 4px 10px;
                 border: none;
