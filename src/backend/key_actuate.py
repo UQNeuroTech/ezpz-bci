@@ -32,5 +32,5 @@ def read_config() -> dict:
     with path.open("r", encoding="utf-8") as file:
         return yaml.safe_load(file)
 
-if __name__ == "__main__":
-    press_key("test")
+# if __name__ == "__main__":
+#     press_key("test")
