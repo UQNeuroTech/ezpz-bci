@@ -175,6 +175,7 @@ class CountdownApp(QMainWindow):
         self.data_collection_thread.finished.connect(self.on_data_collection_finished)
         self.data_collection_thread.error.connect(self.on_data_collection_error)
         self.data_collection_thread.update_marker.connect(self.update_marker_display)
+        self.data_collection_thread.set_board_id("CYTON_BOARD")  # Adjust as needed
         self.data_collection_thread.start()
 
     def on_data_collection_finished(self):
