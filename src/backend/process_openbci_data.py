@@ -150,9 +150,15 @@ def convert_to_mne(name, board_id, save_name, save_path, samples, markers, save=
     return epochs
 
 if __name__ == "__main__":
+    import os
+    import sys
+    # Add the project root directory to Python path
+    project_root = os.path.dirname("../../")
+    sys.path.insert(0, project_root)
+
     name = "ezpz-test"
-    samples, markers = load_openbci_data("data/", verbose=True)
+    samples, markers = load_openbci_data("../../data/", verbose=True)
 
     board_id = BoardIds.SYNTHETIC_BOARD
     # board_id = BoardIds.CYTON_BOARD
-    convert_to_mne(board_id, name, name, "data", samples, markers, save=True)
+    convert_to_mne(board_id, name, name, "../../data", samples, markers, save=True)
