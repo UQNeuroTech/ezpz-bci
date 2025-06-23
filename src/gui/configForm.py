@@ -26,17 +26,15 @@ class HotKeyMapper(QWidget):
         super().__init__()
         self.setWindowTitle("Hot-Key Mapper")
 
-        # ----- form: choose command + capture shortcut ----------------
+        # collect command mappings
         self.commands = load_commands(Path("./data/categories.json"))
-        print(self.commands)
         self.command_box = QComboBox()
         self.command_box.addItems(self.commands) 
-
         self.key_edit = QKeySequenceEdit()
-
         self.add_btn = QPushButton("Add Mapping")
         self.add_btn.clicked.connect(self.add_mapping)
 
+        #display command mappings
         form = QFormLayout()
         form.addRow("Command:", self.command_box)
         form.addRow("Shortcut:", self.key_edit)
@@ -53,30 +51,41 @@ class HotKeyMapper(QWidget):
         layout.addLayout(form)
         layout.addWidget(self.table)
 
+        #on file change refresgh table
         self.refresh()
-
         self.watcher = QFileSystemWatcher(["./data/categories.json"])
         self.watcher.fileChanged.connect(self.on_file_changed)
 
         # storage for live QShortcuts
         self._shortcuts = {}   # {QKeySequence().toString(): QShortcut}
+
     def refresh(self):
+        """
+        Refresh the comand box options for the drop down
+        """
         self.command_box.addItems(load_commands(Path("./data/categories.json")))
-    #Add / replace a mapping
+
     @Slot()
     def on_file_changed(self, changed_path):
         """
-        QFileSystemWatcher stops watching a file if it is *removed* and
-        *recreated* (common when editors do “safe save”).  So we add it back:
+        QFileSystemWatcher stops watching a file if it is removed and
+        recreated. Makes QFileSystemWatcher persistant
         """
         if changed_path not in self.watcher.files():
             self.watcher.addPath(changed_path)
 
         self.refresh()                     # re-run your logic
+
     def add_mapping(self):
+        """
+        add a button press to the map to command
+        """
+
+        #get the current info from the form
         cmd_name   = self.command_box.currentText()
         key_seq    = self.key_edit.keySequence()
 
+        #make sure input is not empty
         if key_seq.isEmpty():
             QMessageBox.warning(self, "No shortcut",
                                 "Press a key combination first.")
@@ -91,7 +100,9 @@ class HotKeyMapper(QWidget):
         else:
             self._insert_row(cmd_name, key_str)
 
+        #add mapping to config file
         add_to_file(key_str, cmd_name, path)
+
         # Create a live QShortcut bound to this window
         sc = QShortcut(key_seq, self)
 
@@ -101,14 +112,19 @@ class HotKeyMapper(QWidget):
         # reset editor for the next entry
         self.key_edit.clear()
 
-    # ----- helpers to keep the table in sync -------------------------
     def _insert_row(self, cmd, key):
+        """
+        insert a new row in the table
+        """
         r = self.table.rowCount()
         self.table.insertRow(r)
         self.table.setItem(r, 0, QTableWidgetItem(cmd))
         self.table.setItem(r, 1, QTableWidgetItem(key))
 
     def _replace_row(self, key, new_cmd):
+        """
+        replace a row in the display tble
+        """
         for row in range(self.table.rowCount()):
             if self.table.item(row, 1).text() == key:
                 self.table.item(row, 0).setText(new_cmd)
@@ -116,6 +132,9 @@ class HotKeyMapper(QWidget):
 
     
 def add_to_file(key, cmd, path):
+    """
+    Add a cmd to the config file
+    """
     
     path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -137,6 +156,7 @@ def add_to_file(key, cmd, path):
         data = {}
 
     data[key] = cmd
+
     #update and save
     tmp = path.with_suffix(".tmp")
     with tmp.open("w", encoding="utf-8") as f:
@@ -144,7 +164,7 @@ def add_to_file(key, cmd, path):
     tmp.replace(path)
 
 def load_commands(cfg_path):
-    """Read cfg_path and return a dict {Pretty Name: handler}."""
+    """Read cfg_path and return a list of trained commands"""
     if not cfg_path.exists():
         print("Config file missing using no commands.")
         return {}
@@ -157,18 +177,3 @@ def load_commands(cfg_path):
     for i in data.get("categories", []):
         list_of_commands.append(i)
     return list_of_commands
-
-
-
-# -------------------------------------------------------------------- #
-# 4.  Run it                                                           #
-# -------------------------------------------------------------------- ##
-#if __name__ == "__main__":
-#    app = QApplication(sys.argv)
-#    app.setAttribute(Qt.AA_EnableHighDpiScaling)
-
-#    w = HotKeyMapper()
-#    w.resize(500, 400)
-#    w.show()
-
-#    sys.exit(app.exec())
