@@ -111,6 +111,9 @@ class CountdownApp(QMainWindow):
             # Ensure the "categories" key exists
             if "categories" not in data:
                 data["categories"] = []
+            
+            if "port" not in data:
+                data["port"] = ""
     
             # Add the category only if it doesn't already exist
             if textbox_contents not in data["categories"]:

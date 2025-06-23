@@ -3,7 +3,9 @@ from PySide6.QtWidgets import (
     QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QPushButton, QTextEdit, QComboBox, QSpacerItem, QSizePolicy
 )
 from PySide6.QtGui import QPixmap
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QPropertyAnimation, QRect
+import os
+import json
 
 class Connect(QMainWindow):
     def __init__(self):
@@ -39,7 +41,6 @@ class Connect(QMainWindow):
         layout1 = QVBoxLayout()
         layout1.addWidget(self.boxLabel)
         layout1.addWidget(self.comboBox)
-
 
         # Second textEdit (Port)
         self.port = QTextEdit()
@@ -82,9 +83,28 @@ class Connect(QMainWindow):
         self.button1.clicked.connect(self.connect_headset)
 
     def connect_headset(self):
+        self.button1.setStyleSheet("background-color: #81C784; color: white; font-size: 14px; padding: 10px; border-radius: 5px;")
+        os.makedirs("./data", exist_ok=True)
+        json_file_path = "./data/categories.json"
+
+        if os.path.exists(json_file_path):
+                with open(json_file_path, "r") as json_file:
+                    try:
+                        data = json.load(json_file)
+                    except json.JSONDecodeError:
+                         print("error")
         # Get the port from the QTextEdit and print it
         port_value = self.port.toPlainText()
-        if port_value:
-            print(f"Connecting to port: {port_value}")
+        if "port" not in data:
+                data["port"] = port_value
         else:
-            print("No port entered!")
+             data["port"] = port_value
+        try:
+            with open(json_file_path, "w") as json_file:
+                json.dump(data, json_file, indent=4)
+                print(f"Data successfully saved to {json_file_path}: {data}")  # Debugging output
+        except Exception as e:
+            print(f"Error saving data to {json_file_path}: {e}")  # Debugging output
+        
+        self.button1.setStyleSheet("background-color: #4CAF50; color: white; font-size: 14px; padding: 10px; border-radius: 5px;")
+            
