@@ -76,12 +76,9 @@ def load_openbci_data(jsons_path, verbose=False):
 
     return eeg_samples_unbuffered, eeg_markers_unbuffered
 
-def convert_to_mne(name, save_name, save_path, samples, markers, save=True):
+def convert_to_mne(name, board_id, save_name, save_path, samples, markers, save=True):
     # adapted from: https://brainflow.readthedocs.io/en/stable/notebooks/brainflow_mne.html 
 
-    board_id = BoardIds.SYNTHETIC_BOARD
-    # board_id = BoardIds.CYTON_BOARD
-    
     params = BrainFlowInputParams()
 
     eeg_channels = BoardShim.get_eeg_channels(board_id.value)
@@ -153,7 +150,12 @@ def convert_to_mne(name, save_name, save_path, samples, markers, save=True):
         # Save Epochs
         epochs.save(save_path + "/" + save_name + '-epo.fif', overwrite=True)
 
+    return epochs
+
 if __name__ == "__main__":
     name = "ezpz-test"
     samples, markers = load_openbci_data("data/", verbose=True)
-    convert_to_mne(name, name, "data", samples, markers, save=True)
+
+    board_id = BoardIds.SYNTHETIC_BOARD
+    # board_id = BoardIds.CYTON_BOARD
+    convert_to_mne(board_id, name, name, "data", samples, markers, save=True)
