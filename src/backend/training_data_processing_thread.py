@@ -10,7 +10,7 @@ class TrainingThread(QThread):
     def run(self):
         try:
             samples, markers = load_openbci_data("./data", False, False)
-            convert_to_mne("mne_data", "mne_data", "./data", samples, markers)
+            convert_to_mne("mne_data", "mne_data", "./data", samples, markers, show_ui=False)
             hyperparameters = {
                 "epochs": 200,
                 "test-ratio": 0.3
