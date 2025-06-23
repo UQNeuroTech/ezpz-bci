@@ -82,10 +82,10 @@ def convert_to_mne(board_id, name, save_name, save_path, samples, markers, save=
     eeg_data = np.array(samples)#[eeg_channels, :]
     # eeg_data = eeg_data / 1000000 # BrainFlow returns uV, convert to V for MNE
 
-    print("eeg_channels", eeg_channels)
-    print("len(eeg_data)", len(eeg_data))
-    print("len(eeg_data[0])", len(eeg_data[0]))
-    print("eeg_data[0]", eeg_data[0])
+    # print("eeg_channels", eeg_channels)
+    # print("len(eeg_data)", len(eeg_data))
+    # print("len(eeg_data[0])", len(eeg_data[0]))
+    # print("eeg_data[0]", eeg_data[0])
     # print("eeg_data", eeg_data)
 
     # Creating MNE objects from brainflow data arrays
@@ -94,8 +94,8 @@ def convert_to_mne(board_id, name, save_name, save_path, samples, markers, save=
     ch_names = BoardShim.get_eeg_names(board_id.value)
     if not classify:ch_names.append('STI 014')
 
-    print("ch_types", ch_types)
-    print("ch_names", ch_names)
+    # print("ch_types", ch_types)
+    # print("ch_names", ch_names)
     
     sfreq = BoardShim.get_sampling_rate(board_id.value)
     info = mne.create_info(ch_names=ch_names, sfreq=sfreq, ch_types=ch_types)
@@ -125,8 +125,8 @@ def convert_to_mne(board_id, name, save_name, save_path, samples, markers, save=
         tmin, tmax = -0.2, 2  # define epochs around events (in s)
         epochs = mne.Epochs(raw, events, event_dict, tmin, tmax, preload=True)
 
-        print(epochs)
-        print(epochs.event_id)
+        # print(epochs)
+        # print(epochs.event_id)
 
         # Plot epochs
         if show_ui:
