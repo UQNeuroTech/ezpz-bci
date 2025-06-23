@@ -106,14 +106,14 @@ def convert_to_mne(board_id, name, save_name, save_path, samples, markers, save=
         events = mne.find_events(raw)#, stim_channel="STI 014")
         print(events[:5])  # show the first 5 events
     raw.set_montage("standard_1005")
-    raw = raw.filter(l_freq=0.2, h_freq=30, method='iir')  # bandpass filter
+    raw = raw.filter(l_freq=0.2, h_freq=40, method='iir')  # bandpass filter
 
 
     # plot data
     if show_ui:
         raw.plot()
         raw.plot_psd(average=False)
-        plt.show()
+        # plt.show()
 
     if not classify:
         # Create EPOCHS
@@ -131,6 +131,7 @@ def convert_to_mne(board_id, name, save_name, save_path, samples, markers, save=
         # Plot epochs
         if show_ui:
             epochs.plot(scalings='auto', events=True)
+            print("DEBUG5")
 
             plt.show()
 
@@ -153,4 +154,4 @@ if __name__ == "__main__":
     # board_id = BoardIds.SYNTHETIC_BOARD
     # board_id = BoardIds.CYTON_BOARD
     board_id = BoardIds.CYTON_BOARD
-    convert_to_mne(board_id, name, name, "../../data", samples, markers, save=True)
+    convert_to_mne(board_id, name, name, "../../data", samples, markers, save=True, show_ui=True)

@@ -333,8 +333,8 @@ if __name__ == "__main__":
     load_path = "./data/ezpz-test-epo.fif"
     save_path_folder = "data/"
 
-    train(name, load_path, save_path_folder, hyperparameters, save=True)
-    # evaluate(name, save_path_folder, pltshow=True, save=False, verbose=True)
+    # train(name, load_path, save_path_folder, hyperparameters, save=True)
+    evaluate(name, save_path_folder, pltshow=True, save=False, verbose=True)
 
     # task = 2
     # load_path_folder = DATA_DIR + "/physionet-fifs-8-channel/task"+ str(task) +"/"
