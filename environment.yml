@@ -7,5 +7,7 @@ dependencies:
   - pandas
   - matplotlib
   - PySide6
+  - pytorch
   - pip:
     - brainflow
+    - torchsummary

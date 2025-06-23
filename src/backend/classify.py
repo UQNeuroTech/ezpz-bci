@@ -9,7 +9,7 @@ import json
 
 import torch
 import numpy as np
-import eegnet
+from src.backend import eegnet
 
 MODEL_PATH = "./ezpz-model.pth"  # e.g. "models/my_model.pth"
 CHANS = 8
