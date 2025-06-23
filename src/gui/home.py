@@ -149,7 +149,7 @@ class Home(QWidget):
                 break
 
 
-class MainWindow(QWidget):
+class MainWindow(QWidget):       
     """Wrapper window that provides a horizontal tab banner."""
     def __init__(self):
         super().__init__()
@@ -186,7 +186,7 @@ class MainWindow(QWidget):
 
         #logo
         logo = QLabel()
-        pix = QPixmap("./src/gui/images/ezpzbci.svg");
+        pix = QPixmap("./src/gui/images/ezpzbci.svg")
         logo.setPixmap(pix)
         logo.setPixmap(pix.scaledToHeight(24, Qt.SmoothTransformation))
         if pix.isNull():
