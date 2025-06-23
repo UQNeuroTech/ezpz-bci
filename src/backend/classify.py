@@ -3,19 +3,21 @@ import time
 
 from brainflow.board_shim import  BoardIds
 
-from src.backend.connect import initalize_board
+# from src.backend.connect import initalize_board
+from connect import initalize_board
+# from src.backend import eegnet
+import eegnet
 
 import json
 
 import torch
 import numpy as np
-from src.backend import eegnet
 
-MODEL_PATH = "./ezpz-model.pth"  # e.g. "models/my_model.pth"
+MODEL_PATH = "./data/ezpz-model.pth"  # e.g. "models/my_model.pth"
 CHANS = 8
 TIME_POINTS = 801
 
-with open("ezpz-model.json", 'r') as json_file1:
+with open("./data/ezpz-model.json", 'r') as json_file1:
     train_metas = json.load(json_file1)
 
 # These values should match your training data.
@@ -89,6 +91,7 @@ def main():
         json.dump(eeg_markers, json_file2)
 
 
+
 def classify_eeg_sample(eeg_sample):
     """
     eeg_sample: np.ndarray or list, shape [CHANS, TIME_POINTS]
@@ -116,12 +119,39 @@ def classify_eeg_sample(eeg_sample):
 
     return pred_class
 
+# def classify_eeg_sample(eeg_sample):
+#     """
+#     eeg_sample: np.ndarray or list, shape [CHANS, TIME_POINTS]
+#     """
+
+#     print("eeg_sample type/shape:", type(eeg_sample), np.array(eeg_sample).shape)
+
+#     # Convert to numpy if needed
+#     eeg_np = np.array(eeg_sample)
+
+
+
+#     # Z-score normalization (adapt as needed)
+#     eeg_np = (eeg_np - TRAIN_MEAN) / TRAIN_STD
+
+#     # Reshape to (batch, 1, chans, time_points)
+#     eeg_tensor = torch.tensor(eeg_np, dtype=torch.float32).unsqueeze(0).unsqueeze(0)  # [1, 1, chans, time_points]
+
+#     print("eeg_tensor.shape:", eeg_tensor.shape)
+
+#     # Model prediction
+#     with torch.no_grad():
+#         logits = model(eeg_tensor)
+#         pred_class = torch.argmax(logits, dim=1).item()
+
+#     return pred_class
+
 
 
 if __name__ == "__main__":
-    import os
-    import sys  
-    # Add the project root directory to Python path
-    project_root = os.path.dirname("../../")
-    sys.path.insert(0, project_root)
+    # import os
+    # import sys  
+    # # Add the project root directory to Python path
+    # project_root = os.path.dirname("../../")
+    # sys.path.insert(0, project_root)
     main()
