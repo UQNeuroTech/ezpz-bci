@@ -73,7 +73,7 @@ def load_openbci_data(jsons_path, verbose=False, show_ui = True):
 
     return eeg_samples_unbuffered, eeg_markers_unbuffered
 
-def convert_to_mne(name, board_id, save_name, save_path, samples, markers, save=True):
+def convert_to_mne(name, board_id, save_name, save_path, samples, markers, save=True, show_ui=True):
     # adapted from: https://brainflow.readthedocs.io/en/stable/notebooks/brainflow_mne.html 
 
     params = BrainFlowInputParams()
