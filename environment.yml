@@ -8,6 +8,7 @@ dependencies:
   - matplotlib
   - PySide6
   - pytorch
+  - pynput
   - pip:
     - brainflow
     - torchsummary

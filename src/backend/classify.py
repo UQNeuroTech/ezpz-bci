@@ -10,6 +10,7 @@ from connect import initalize_board
 import eegnet
 
 from process_openbci_data import convert_to_mne
+from src.backend.key_actuate import press_key
 
 import json
 
@@ -82,6 +83,7 @@ def main():
                 marker = marker_dict[prediction]
                 print("logits:", logits)
                 print(f"Iteration: {iter}, Prediction: {marker} ({prediction})")
+                press_key(marker)
             except Exception as e:
                 print(f"Error classifying EEG sample: {e}")
                 continue
@@ -159,9 +161,9 @@ def classify_eeg_sample(eeg_sample):
 
 
 if __name__ == "__main__":
-    # import os
-    # import sys  
-    # # Add the project root directory to Python path
-    # project_root = os.path.dirname("../../")
-    # sys.path.insert(0, project_root)
+    import os
+    import sys
+    # Add the project root directory to Python path
+    project_root = os.path.dirname("../../")
+    sys.path.insert(0, project_root)
     main()
