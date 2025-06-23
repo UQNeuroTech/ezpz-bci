@@ -1,13 +1,11 @@
-import argparse
+
 import time
-from pprint import pprint
 
-from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
+from brainflow.board_shim import  BoardIds
 
-from connect import initalize_board
+from src.backend.connect import initalize_board
 
 import json
-import random
 
 import torch
 import numpy as np
