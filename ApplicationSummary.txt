@@ -23,6 +23,16 @@ We envision EZPZ-BCI as a tool for a wide range of use cases, including hobbyist
 
 In the coming months we intend on finalising the above action items and hope to have a fully complete executable. 
 
+Contibutors
+* Reuben Richardson
+* Isabel Barton
+* Mac Rogers
+* Benjamin Pettit
+* Ayman Diallo
+
+Resources
+UQ Neurotech discord server: https://discord.gg/j8zRpvUx2Z
+
 References
 [1] Dooganar, bioe6100-MI-EEG-classification, GitHub repository, July 2025, [Online]. Available:
 https://github.com/Dooganar/bioe6100-MI-EEG-classification.git
