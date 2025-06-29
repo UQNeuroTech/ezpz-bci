@@ -1,4 +1,4 @@
-EZPZ-BCI: A Customizable Interface for EEG-Based Computer Input
+## EZPZ-BCI: A Customizable Interface for EEG-Based Computer Input
 
 When utilizing EEG signals to classify user intent three common issues arise:
 
@@ -23,17 +23,17 @@ We envision EZPZ-BCI as a tool for a wide range of use cases, including hobbyist
 
 In the coming months we intend on finalising the above action items and hope to have a fully complete executable. 
 
-Contibutors
+### Contibutors
 * Reuben Richardson
 * Isabel Barton
 * Mac Rogers
 * Benjamin Pettit
 * Ayman Diallo
 
-Resources
+### Resources
 UQ Neurotech discord server: https://discord.gg/j8zRpvUx2Z
 
-References
+### References
 [1] Dooganar, bioe6100-MI-EEG-classification, GitHub repository, July 2025, [Online]. Available:
 https://github.com/Dooganar/bioe6100-MI-EEG-classification.git
 
