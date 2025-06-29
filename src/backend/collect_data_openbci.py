@@ -50,24 +50,28 @@ def add_nothing_prompts(lst):
     return result
 
 
-def main(ui_callback, is_running, board_id=BoardIds.CYTON_BOARD, is_synthetic=False):
+def main(ui_callback, is_running, board_id=BoardIds.CYTON_BOARD):
     batch_size = 5
 
+    cycle_count = 1
+    is_synthetic = False
+    cycle_duration = 2
     try:
-        # Read cycle_count from categories.json
+        # Read configuration from categories.json
         json_file_path = "data/categories.json"
         if os.path.exists(json_file_path):
             with open(json_file_path, "r") as json_file:
                 data = json.load(json_file)
-                cycle_count = data.get("cycle_count", 1)
+                cycle_count = data.get("cycle_count", cycle_count)
+                cycle_duration = data.get("cycle_duration", cycle_duration)
+                is_synthetic = data.get("synthetic_device", is_synthetic)
     except Exception as e:
-        print(f"Error reading cycle_count from categories.json: {e}")
+        print(f"Error reading from categories.json: {e}")
 
     prompt_order = generate_prompt_order(batch_size)
     print(prompt_order)
     prompt_order = add_nothing_prompts(prompt_order)
     print(prompt_order)
-
 
     board = initalize_board(board_id, "/dev/ttyUSB0", is_synthetic)
 
@@ -98,7 +102,7 @@ def main(ui_callback, is_running, board_id=BoardIds.CYTON_BOARD, is_synthetic=Fa
 
         cur_time = time.time()
 
-        if cur_time - prev_time > 2: 
+        if cur_time - prev_time > cycle_duration:
             current_marker = marker_dict[prompt_order[prompt_iter]]
             print(prompt_iter, '|', current_marker)
 
@@ -145,8 +149,8 @@ def main(ui_callback, is_running, board_id=BoardIds.CYTON_BOARD, is_synthetic=Fa
     board.stop_stream()
     board.release_session()
 
-    samples_path = "../../data/eeg_samples.json"
-    markers_path = "../../data/eeg_markers.json"
+    samples_path = "data/eeg_samples.json"
+    markers_path = "data/eeg_markers.json"
 
     with open(samples_path, 'w') as json_file1:
         json.dump(eeg_samples, json_file1)
@@ -157,6 +161,6 @@ def main(ui_callback, is_running, board_id=BoardIds.CYTON_BOARD, is_synthetic=Fa
 
 if __name__ == "__main__":
     PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
-    if PROJECT_ROOT not in sys.path:
-        sys.path.insert(0, PROJECT_ROOT)
-    main(None, lambda: True, BoardIds.CYTON_BOARD, is_synthetic=True)
+    # Change to project root
+    os.chdir(PROJECT_ROOT)
+    main(None, lambda: True, BoardIds.CYTON_BOARD)
