@@ -25,7 +25,7 @@ def read_config() -> dict:
     """
     Reads the YAML configuration file and returns its contents as a dictionary.
     """
-    path = Path("./data/config.json")
+    path = Path("../../data/config.json")
     if not path.exists():
         raise FileNotFoundError(f"Configuration file not found: {path}")
     

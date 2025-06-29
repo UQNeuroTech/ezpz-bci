@@ -9,8 +9,13 @@ from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 from connect import initalize_board
 import eegnet
 
+from pynput.keyboard import Key, Controller, GlobalHotKeys
+from pynput import keyboard
+keyboard = Controller()
+
 from process_openbci_data import convert_to_mne
-from src.backend.key_actuate import press_key
+# from src.backend.key_actuate import press_key
+from key_actuate import press_key
 
 import json
 
@@ -83,7 +88,13 @@ def main():
                 marker = marker_dict[prediction]
                 print("logits:", logits)
                 print(f"Iteration: {iter}, Prediction: {marker} ({prediction})")
-                press_key(marker)
+                # press_key("Right Fist")
+                if prediction == 1:
+                    keyboard.press(Key.down)
+                    keyboard.release(Key.down)
+                if prediction == 2:
+                    keyboard.press(Key.up)
+                    keyboard.release(Key.up)
             except Exception as e:
                 print(f"Error classifying EEG sample: {e}")
                 continue

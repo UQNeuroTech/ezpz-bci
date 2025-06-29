@@ -4,4 +4,8 @@ from pynput import keyboard
 keyboard = Controller()
 
 def press(keyInput):
-    keyboard.press(Key.keyInput)
+    keyboard.press(keyInput)
+
+press("a")
+
+# ekgjel
