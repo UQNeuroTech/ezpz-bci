@@ -8,18 +8,15 @@ class TrainingThread(QThread):
     error = Signal(str)
 
     def run(self):
-        try:
-            samples, markers = load_openbci_data("./data", False, False)
-            convert_to_mne("mne_data", "mne_data", "./data", samples, markers, show_ui=False)
-            hyperparameters = {
-                "epochs": 200,
-                "test-ratio": 0.3
-            }
+        samples, markers = load_openbci_data("./data", False, False)
+        convert_to_mne("mne_data", "mne_data", "./data", samples, markers, show_ui=False)
+        hyperparameters = {
+            "epochs": 200,
+            "test-ratio": 0.3
+        }
 
-            name = "ezpz-model"
-            load_path = "./data/ezpz-epochs-epo.fif"
-            save_path_folder = "./data"
-            train(name, load_path, save_path_folder, hyperparameters, save=True)
-            self.finished.emit()
-        except Exception as e:
-            self.error.emit(str(e))
+        name = "ezpz-model"
+        load_path = "./data/ezpz-epochs-epo.fif"
+        save_path_folder = "./data"
+        train(name, load_path, save_path_folder, hyperparameters, save=True)
+        self.finished.emit()

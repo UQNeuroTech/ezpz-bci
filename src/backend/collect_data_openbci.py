@@ -1,9 +1,8 @@
-import argparse
+import sys
 import time
 import os
-from pprint import pprint
 
-from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
+from brainflow.board_shim import BoardIds
 
 from src.backend.connect import initalize_board
 
@@ -51,29 +50,28 @@ def add_nothing_prompts(lst):
     return result
 
 
-def main(ui_callback, is_running, board_id=BoardIds.CYTON_BOARD):
+def main(ui_callback, is_running, board_id=BoardIds.CYTON_BOARD, is_synthetic=False):
     batch_size = 5
 
-    # Read cycle_count from categories.json
-    cycle_count = 2
     try:
-        json_file_path = "./src/gui/db/categories.json"
+        # Read cycle_count from categories.json
+        json_file_path = "data/categories.json"
         if os.path.exists(json_file_path):
             with open(json_file_path, "r") as json_file:
                 data = json.load(json_file)
-                cycle_count = data.get("cycle_count", cycle_count)
+                cycle_count = data.get("cycle_count", 1)
     except Exception as e:
         print(f"Error reading cycle_count from categories.json: {e}")
-
-    print(f"Will run for {cycle_count} cycles")
 
     prompt_order = generate_prompt_order(batch_size)
     print(prompt_order)
     prompt_order = add_nothing_prompts(prompt_order)
     print(prompt_order)
 
-    
-    board = initalize_board(board_id, "/dev/ttyUSB0")
+
+    board = initalize_board(board_id, "/dev/ttyUSB0", is_synthetic)
+
+    print(f"Will run for {cycle_count} cycles")
 
     iter = 0
     prompt_iter = 0
@@ -137,7 +135,7 @@ def main(ui_callback, is_running, board_id=BoardIds.CYTON_BOARD):
         channels = board.get_eeg_channels(board_id)
 
         if iter == 1:
-            print("Number of Channels:", len(data))
+            print("Number of Channels:", len(channels))
 
         eeg_sample = [data[i].tolist() for i in channels]
 
@@ -147,11 +145,18 @@ def main(ui_callback, is_running, board_id=BoardIds.CYTON_BOARD):
     board.stop_stream()
     board.release_session()
 
-    samples_path = "./data/eeg_samples.json"
-    markers_path = "./data/eeg_markers.json"
+    samples_path = "../../data/eeg_samples.json"
+    markers_path = "../../data/eeg_markers.json"
 
     with open(samples_path, 'w') as json_file1:
         json.dump(eeg_samples, json_file1)
 
     with open(markers_path, 'w') as json_file2:
         json.dump(eeg_markers, json_file2)
+
+
+if __name__ == "__main__":
+    PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+    if PROJECT_ROOT not in sys.path:
+        sys.path.insert(0, PROJECT_ROOT)
+    main(None, lambda: True, BoardIds.CYTON_BOARD, is_synthetic=True)

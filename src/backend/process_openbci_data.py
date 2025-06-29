@@ -76,8 +76,6 @@ def load_openbci_data(jsons_path, verbose=False, show_ui = True):
 def convert_to_mne(board_id, name, save_name, save_path, samples, markers, save=True, show_ui=True, classify=False):
     # adapted from: https://brainflow.readthedocs.io/en/stable/notebooks/brainflow_mne.html 
 
-    params = BrainFlowInputParams()
-
     eeg_channels = BoardShim.get_eeg_channels(board_id.value)
     eeg_data = np.array(samples)#[eeg_channels, :]
     # eeg_data = eeg_data / 1000000 # BrainFlow returns uV, convert to V for MNE
@@ -151,7 +149,6 @@ if __name__ == "__main__":
     name = "ezpz-test"
     samples, markers = load_openbci_data("../../data/", verbose=True)
 
-    # board_id = BoardIds.SYNTHETIC_BOARD
+    board_id = BoardIds.SYNTHETIC_BOARD
     # board_id = BoardIds.CYTON_BOARD
-    board_id = BoardIds.CYTON_BOARD
     convert_to_mne(board_id, name, name, "../../data", samples, markers, save=True, show_ui=True)
