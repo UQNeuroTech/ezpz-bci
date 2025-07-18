@@ -19,6 +19,7 @@ import json
 import csv
 
 from src.backend import eegnet
+# import eegnet
 
 DATA_DIR = "/home/reuben/Documents/eeg-data/"
 MODELS_DIR = "../models/"
@@ -332,7 +333,7 @@ if __name__ == "__main__":
 
     hyperparameters = {
         "epochs": 200,
-        "test-ratio": 0.3
+        "test-ratio": 0.1
     }
 
     name = "ezpz-model"

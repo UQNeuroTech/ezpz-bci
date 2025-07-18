@@ -20,6 +20,7 @@ class DataCollectionThread(QThread):
         # if 
         # self.board_id = board_id
         self.board_id = BoardIds.CYTON_BOARD  # Default to CYTON_BOARD, can be set later
+        # self.board_id = BoardIds.CROWN_BOARD  # Default to CYTON_BOARD, can be set later
 
     def update_ui(self, marker_text):
         # Emit signal to update UI
