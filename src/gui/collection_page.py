@@ -70,6 +70,9 @@ class CountdownApp(QMainWindow):
         # Track button state
         self.is_collecting = False
 
+        # Load settings from JSON on initialization
+        self.load_from_json()
+
     def toggle_data_collection(self):
         """Toggle between starting and stopping data collection."""
         if not self.is_collecting:
@@ -87,6 +90,36 @@ class CountdownApp(QMainWindow):
             self.run_button.setText("Run")
             self.is_collecting = False
             self.heading_label.setText("Collection stopped")
+
+    def load_from_json(self):
+        """Load settings from JSON file and populate UI fields."""
+        json_file_path = "./data/categories.json"
+
+        if os.path.exists(json_file_path):
+            try:
+                with open(json_file_path, "r") as json_file:
+                    data = json.load(json_file)
+
+                    # Populate cycle count field
+                    if "cycle_count" in data:
+                        self.cycles_box.setText(str(data["cycle_count"]))
+
+                    # Populate cycle duration field
+                    if "cycle_duration" in data:
+                        self.duration_box.setText(str(data["cycle_duration"]))
+
+                    # Populate category field with the most recent category
+                    if "categories" in data and data["categories"]:
+                        # Use the last category in the list as the default
+                        self.input_box.setText(data["categories"][-1])
+
+                    print(f"Settings loaded from {json_file_path}: {data}")  # Debugging output
+
+            except (json.JSONDecodeError, Exception) as e:
+                print(f"Error loading settings from {json_file_path}: {e}")
+                # If there's an error, keep the default placeholder text
+        else:
+            print(f"Settings file {json_file_path} does not exist. Using default values.")
 
     def save_to_json(self):
         """Save text box contents to JSON."""
