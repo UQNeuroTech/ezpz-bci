@@ -21,7 +21,7 @@ class TrainingThread(QThread):
             }
 
             name = "ezpz-model"
-            load_path = "./data/ezpz-epochs-epo.fif"
+            load_path = "./data/mne_data-epo.fif"
             save_path_folder = "./data"
             train(name, load_path, save_path_folder, hyperparameters, save=True)
             self.finished.emit()

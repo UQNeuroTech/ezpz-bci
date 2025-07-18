@@ -54,6 +54,9 @@ class TrainingPage(QMainWindow):
 
         self.training_thread = None
 
+        # Load previously saved values when the page loads
+        self.load_from_json()
+
     def toggle_train_button(self):
         """Toggle the train button between on (green) and off (red)."""
         if self.train_button.isChecked():
@@ -128,6 +131,31 @@ class TrainingPage(QMainWindow):
         with open(json_file_path, "w") as json_file:
             json.dump(data, json_file, indent=4)
         print(f"Data saved to {json_file_path}: {data}")
+
+    def load_from_json(self):
+        """Load textbox values from data/categories.json."""
+        json_file_path = "./data/categories.json"
+
+        # Check if the file exists
+        if not os.path.exists(json_file_path):
+            print(f"No saved data found at {json_file_path}")
+            return
+
+        try:
+            with open(json_file_path, "r") as json_file:
+                data = json.load(json_file)
+
+                # Populate the input fields with saved values
+                if "epoch_count" in data:
+                    self.epochs_input.setText(str(data["epoch_count"]))
+
+                if "learning_rate" in data:
+                    self.learning_rate_input.setText(str(data["learning_rate"]))
+
+                print(f"Data loaded from {json_file_path}: {data}")
+
+        except (json.JSONDecodeError, FileNotFoundError) as e:
+            print(f"Error loading data from {json_file_path}: {e}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
