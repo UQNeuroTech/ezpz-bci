@@ -51,7 +51,7 @@ def main():
     # board_id = BoardIds.SYNTHETIC_BOARD
     board_id = BoardIds.CYTON_BOARD
     # board_id = BoardIds.CROWN_BOARD
-    board = initalize_board(board_id, "/dev/ttyUSB0")  # Adjust port as needed
+    board = initalize_board(board_id, "/dev/ttyUSB0", is_synthetic=False)  # Adjust port as needed
 
     iter = 0
 
